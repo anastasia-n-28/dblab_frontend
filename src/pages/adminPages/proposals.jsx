@@ -10,7 +10,7 @@ const Proposal = () => {
     const authHeader = useAuthHeader();
 
     useEffect(() => {
-        axios.get(`${API_CONFIG.BASE_URL}/proposal_type/getall`, {
+        axios.get(`${API_CONFIG.BASE_URL}/proposalType/getall`, {
             headers: {
                 'Authorization': authHeader.split(' ')[1],
             }

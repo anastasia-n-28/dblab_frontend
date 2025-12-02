@@ -8,7 +8,7 @@ const ResultType = () => {
     const authHeader = useAuthHeader();
 
     useEffect(() => {
-        axios.get(`${API_CONFIG.BASE_URL}/result_type/getall`, {
+        axios.get(`${API_CONFIG.BASE_URL}/resultType/getall`, {
             headers: {
                 'Authorization': authHeader.split(' ')[1],
             }

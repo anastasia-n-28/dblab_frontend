@@ -24,6 +24,7 @@ import DisciplineSkills from "./pages/adminPages/disciplineSkills.jsx";
 import Lessons from "./pages/adminPages/lessons.jsx";
 import Events from "./pages/adminPages/events.jsx";
 import Materials from './pages/adminPages/materials.jsx';
+
 import Directions from './pages/adminPages/directions.jsx';
 import Proposals from './pages/adminPages/proposals.jsx';
 import ProposalTypes from './pages/adminPages/proposalTypes.jsx';
@@ -66,6 +67,7 @@ const App = () => {
                     <Route path={"lessons"} element={<Lessons/>}></Route>
                     <Route path={"events"} element={<Events/>}></Route>
                     <Route path={"materials"} element={<Materials/>}></Route>
+                    
                     <Route path={"directions"} element={<Directions/>}></Route>
                     <Route path={"proposals"} element={<Proposals/>}></Route>
                     <Route path={"proposaltypes"} element={<ProposalTypes/>}></Route>
