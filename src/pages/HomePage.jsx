@@ -48,32 +48,22 @@ const ExpertCard = ({ name, role, image, position, placeOfEmployment, level, des
 }
 
 const HomePage = () => {
-    const skills = [
-        {
-            id: 1,
-            name: "Моделювання БД",
-        },
-        {
-            id: 2,
-            name: "Високопродуктивні БД",
-        },
-        {
-            id: 3,
-            name: "Експертиза проєктів БД",
-        },
-        {
-            id: 4,
-            name: "Реінжиніринг БД",
-        },
-        {
-            id: 5,
-            name: "Реляційні та NoSQL СУБД",
-        },
-    ];
+    const [skills, setSkills] = useState([]);
     const [directions, setDirections] = useState([]);
     const [experts, setExperts] = useState([]);
 
     useEffect(() => {
+                axios.get(`${API_CONFIG.BASE_URL}/direction/getall`)
+            .then(response => {
+                setSkills(response.data.map(skill => ({
+                    id: skill.direction_Id,
+                    name: skill.direction_name,
+                })));
+            })
+            .catch(error => {
+                console.error("Error fetching skills:", error);
+            });
+        
         axios.get(`${API_CONFIG.BASE_URL}/developmentDirection/getall`)
             .then(response => {
                 setDirections(response.data.slice(0, 4).map(direction => ({

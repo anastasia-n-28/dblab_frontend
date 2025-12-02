@@ -22,6 +22,16 @@ const AdminPageLayout = () => {
         {name: 'Lessons', path: '/apanel/lessons'},
         {name: 'Events', path: '/apanel/events'},
         {name: 'Materials', path: '/apanel/materials'},
+        {name: 'Directions', path: '/apanel/directions'},
+        {name: 'Proposals', path: '/apanel/proposals'},
+        {name: 'Proposal Types', path: '/apanel/proposaltypes'},
+        {name: 'Works', path: '/apanel/works'},
+        {name: 'Result Types', path: '/apanel/resulttypes'},
+        {name: 'Results', path: '/apanel/results'},
+        {name: 'Magazines', path: '/apanel/magazines'},
+        {name: 'Conferences', path: '/apanel/conferences'},
+        {name: 'Competitions', path: '/apanel/competitions'},
+        {name: 'Statistics', path: '/apanel/statistics'},
     ];
 
     const authHeader = useAuthHeader();

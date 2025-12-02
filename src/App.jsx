@@ -24,6 +24,18 @@ import DisciplineSkills from "./pages/adminPages/disciplineSkills.jsx";
 import Lessons from "./pages/adminPages/lessons.jsx";
 import Events from "./pages/adminPages/events.jsx";
 import Materials from './pages/adminPages/materials.jsx';
+import Directions from './pages/adminPages/directions.jsx';
+import Proposals from './pages/adminPages/proposals.jsx';
+import ProposalTypes from './pages/adminPages/proposalTypes.jsx';
+import Results from './pages/adminPages/results.jsx';
+import ResultTypes from './pages/adminPages/resultTypes.jsx';
+import Works from './pages/adminPages/works.jsx';
+import Magazines from './pages/adminPages/magazines.jsx';
+import Conferences from './pages/adminPages/conferences.jsx';
+import Competitions from './pages/adminPages/competitions.jsx';
+import Statistics from './pages/adminPages/statistics.jsx';
+import MagazineStatistics from './pages/adminPages/magazineStatistics.jsx';
+import PeriodStatistics from './pages/adminPages/periodStatistics.jsx';
 
 
 const App = () => {
@@ -54,6 +66,18 @@ const App = () => {
                     <Route path={"lessons"} element={<Lessons/>}></Route>
                     <Route path={"events"} element={<Events/>}></Route>
                     <Route path={"materials"} element={<Materials/>}></Route>
+                    <Route path={"directions"} element={<Directions/>}></Route>
+                    <Route path={"proposals"} element={<Proposals/>}></Route>
+                    <Route path={"proposaltypes"} element={<ProposalTypes/>}></Route>
+                    <Route path={"works"} element={<Works/>}></Route>
+                    <Route path={"resulttypes"} element={<ResultTypes/>}></Route>
+                    <Route path={"magazines"} element={<Magazines/>}></Route>
+                    <Route path={"conferences"} element={<Conferences/>}></Route>
+                    <Route path={"competitions"} element={<Competitions/>}></Route>
+                    <Route path={"results"} element={<Results/>}></Route>
+                    <Route path={"statistics"} element={<Statistics/>}></Route>
+                    <Route path={"statistics/magazines"} element={<MagazineStatistics/>}></Route>
+                    <Route path={"statistics/period"} element={<PeriodStatistics/>}></Route>
                 </Route>
             </Routes>
         </div>
