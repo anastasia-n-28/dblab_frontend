@@ -5,17 +5,35 @@ import useAuthHeader from "react-auth-kit/hooks/useAuthHeader";
 import API_CONFIG from '../../config/api.js';
 
 const Work = () => {
+    const [proposalOptions, setProposalOptions] = useState([]);
+    const [userOptions, setUserOptions] = useState([]);
     const authHeader = useAuthHeader();
 
     useEffect(() => {
-        axios.get(`${API_CONFIG.BASE_URL}/work/getall`, {
-            headers: {
-                'Authorization': authHeader.split(' ')[1],
-            }
+        axios.get(`${API_CONFIG.BASE_URL}/proposal/getall`, {
+            headers: { 'Authorization': authHeader.split(' ')[1] }
         })
-        .catch(error => {
-            console.error("Error fetching works:", error);
-        });
+        .then(response => {
+            const options = response.data.map(item => ({
+                id: item.proposal_Id,
+                name: item.name
+            }));
+            setProposalOptions(options);
+        })
+        .catch(err => console.error("Error fetching proposals:", err));
+
+        axios.get(`${API_CONFIG.BASE_URL}/user/getall`, {
+            headers: { 'Authorization': authHeader.split(' ')[1] }
+        })
+        .then(response => {
+            const options = response.data.map(item => ({
+                id: item.user_Id,
+                name: item.nickname
+            }));
+            setUserOptions(options);
+        })
+        .catch(err => console.error("Error fetching users:", err));
+
     }, []);
 
     const columns = [
@@ -24,9 +42,9 @@ const Work = () => {
         { key: "review", title: "Перегляд" },
         { key: "comment", title: "Коментар" },
         { key: "name", title: "Назва" },
-        { key: "file", title: "Файл", modalHidden: true },
-        { key: "proposal_Id", title: "Пропозиція", type: "select" },
-        { key: "user_Id", title: "Користувач" }
+        { key: "file", title: "Файл", modalHidden: true }, // modalHidden приховає поле у формі
+        { key: "proposal_Id", title: "Пропозиція", type: "select", options: proposalOptions },
+        { key: "user_Id", title: "Користувач", type: "select", options: userOptions }
     ];
 
     return (

@@ -7,43 +7,75 @@ import API_CONFIG from '../../config/api.js';
 const Proposal = () => {
     const [proposalTypeOptions, setProposalTypeOptions] = useState([]);
     const [directionOptions, setDirectionOptions] = useState([]);
+    const [teacherOptions, setTeacherOptions] = useState([]);
     const authHeader = useAuthHeader();
 
     useEffect(() => {
         axios.get(`${API_CONFIG.BASE_URL}/proposalType/getall`, {
-            headers: {
-                'Authorization': authHeader.split(' ')[1],
-            }
+            headers: { 'Authorization': authHeader.split(' ')[1] }
         })
         .then(response => {
-            const options = response.data.map(proposalType => ({
-                id: proposalType.proposal_type_Id,
-                name: proposalType.name
+            const options = response.data.map(item => ({
+                id: item.proposal_type_Id,
+                name: item.name
             }));
             setProposalTypeOptions(options);
-        });
+        })
+        .catch(err => console.error("Error fetching proposal types:", err));
 
         axios.get(`${API_CONFIG.BASE_URL}/direction/getall`, {
-            headers: {
-                'Authorization': authHeader.split(' ')[1],
-            }
+            headers: { 'Authorization': authHeader.split(' ')[1] }
         })
         .then(response => {
-            const options = response.data.map(direction => ({
-                id: direction.direction_Id,
-                name: direction.name
+            const options = response.data.map(item => ({
+                id: item.direction_Id,
+                name: item.name
             }));
             setDirectionOptions(options);
-        });
+        })
+        .catch(err => console.error("Error fetching directions:", err));
+
+        axios.get(`${API_CONFIG.BASE_URL}/teacher/getall`, {
+            headers: { 'Authorization': authHeader.split(' ')[1] }
+        })
+        .then(response => {
+            const options = response.data.map(item => ({
+                id: item.teacher_Id,
+                name: item.full_name
+            }));
+            setTeacherOptions(options);
+        })
+        .catch(err => console.error("Error fetching teachers:", err));
+
     }, []);
 
     const columns = [
         { key: "proposal_Id", title: "ID" },
-        { key: "title", title: "Назва" },
+        { key: "name", title: "Назва" },
         { key: "description", title: "Опис" },
-        { key: "status", title: "Статус", type: "select", options: ['Pending', 'Approved', 'Rejected'] },
-        { key: "complexity", title: "Складність", type: "select", options: ['Low', 'Medium', 'High'] },
-        { key: "teacher_Id", title: "Викладач" },
+        { 
+            key: "status", 
+            title: "Статус", 
+            type: "select", 
+            options: [
+                {id: 'Pending', name: 'Pending'}, 
+                {id: 'Approved', name: 'Approved'}, 
+                {id: 'Rejected', name: 'Rejected'},
+                {id: 'Available', name: 'Available'},
+                {id: 'Completed', name: 'Completed'}
+            ] 
+        },
+        { 
+            key: "complexity", 
+            title: "Складність", 
+            type: "select", 
+            options: [
+                {id: 'Low', name: 'Low'}, 
+                {id: 'Medium', name: 'Medium'}, 
+                {id: 'High', name: 'High'}
+            ] 
+        },
+        { key: "teacher_Id", title: "Викладач", type: "select", options: teacherOptions },
         { key: "proposal_type_Id", title: "Тип пропозиції", type: "select", options: proposalTypeOptions },
         { key: "direction_Id", title: "Напрям", type: "select", options: directionOptions }
     ];
