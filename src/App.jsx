@@ -37,6 +37,9 @@ import Competitions from './pages/adminPages/competitions.jsx';
 import Statistics from './pages/adminPages/statistics.jsx';
 import MagazineStatistics from './pages/adminPages/magazineStatistics.jsx';
 import PeriodStatistics from './pages/adminPages/periodStatistics.jsx';
+import StudentProposals from './pages/StudentProposals';
+import StudentResults from './pages/StudentResults';
+import StudentDirections from './pages/StudentDirections';
 
 
 const App = () => {
@@ -53,6 +56,9 @@ const App = () => {
                     <Route path={"/directions/:directionId"} element={<DirectionDetailsPage/>}></Route>
                     <Route path={"/schedule"} element={<SchedulePage/>}/>
                     <Route path={"/contact"} element={<ContactPage/>}/>
+                    <Route path={"/studentproposals"} element={<StudentProposals/>}/>
+                    <Route path={"/studentresults"} element={<StudentResults/>}/>
+                    <Route path={"/studentdirections"} element={<StudentDirections/>}/>
                 </Route>
                 <Route path={'/apanel'} Component={AdminLayout}>
                     <Route path={"teachers"} element={<Teachers/>}></Route>

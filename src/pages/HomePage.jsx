@@ -2,15 +2,19 @@ import './styles/HomePage.css'
 import { Video } from 'lucide-react';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom'; 
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import API_CONFIG from '../config/api.js';
 
-const SkillCard = ({ name }) => (
-    <div className='skill-card'>
-        <p className='skill-card__name'>{name}</p>
-    </div>
+// Оновлена картка навички - тепер це посилання
+const SkillCard = ({ id, name }) => (
+    <Link to={`/student-proposals?directionId=${id}`} className='skill-card-link'>
+        <div className='skill-card'>
+            <p className='skill-card__name'>{name}</p>
+        </div>
+    </Link>
 );
 
 const DirectionCard = ({ name, link, description }) => (
@@ -53,7 +57,7 @@ const HomePage = () => {
     const [experts, setExperts] = useState([]);
 
     useEffect(() => {
-        // Fetching Skills (Directions from DB)
+        // 1. Skills (Directions from DB)
         axios.get(`${API_CONFIG.BASE_URL}/direction/getall`)
             .then(response => {
                 setSkills(response.data.map(skill => ({
@@ -113,10 +117,11 @@ const HomePage = () => {
                     </a>
                     <a className='dblab-presentation__button dblab-presentation__skills-button'
                         href='/courses'>
-                        Переглянути навички
+                        Переглянути дисципліни
                     </a>
                 </div>
             </section>
+            
             <section className='info'>
                 <h3 className='info__heading'>
                     Інформація про гурток
@@ -180,7 +185,13 @@ const HomePage = () => {
                         ))}
                     </Slider>
                 </div>
+
+                {/* Кнопка веде на сторінку всіх напрямів */}
+                <Link to="/student-directions" className='directions__all-directions-button'>
+                    Усі напрями
+                </Link>
             </section>
+
             <section className='directions'>
                 <h3 className='directions__heading'>
                     Обери свій напрям професійного розвитку з базами даних
@@ -190,8 +201,9 @@ const HomePage = () => {
                         <DirectionCard key={direction.id} {...direction} />
                     ))}
                 </div>
+
                 <a href="/directions" className='directions__all-directions-button'>
-                    Усі напрями
+                    Усі напрями розвитку
                 </a>
             </section>
             <section className='experts'>

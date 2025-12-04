@@ -109,6 +109,17 @@
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2), 0 5px 10px var(--secondary-color);
 }
 
+.skill-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    margin: 0 10px;
+}
+.skill-card-link:hover .skill-card {
+    border-color: #009CCF;
+    background-color: #f0faff;
+}
+
 .skill-card__name {
   font-size: large;
   color: var(--primary-color);
