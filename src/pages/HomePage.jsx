@@ -10,7 +10,7 @@ import API_CONFIG from '../config/api.js';
 
 // Оновлена картка навички - тепер це посилання
 const SkillCard = ({ id, name }) => (
-    <Link to={`/student-proposals?directionId=${id}`} className='skill-card-link'>
+    <Link to={`/studentproposals?directionId=${id}`} className='skill-card-link'>
         <div className='skill-card'>
             <p className='skill-card__name'>{name}</p>
         </div>
@@ -187,7 +187,7 @@ const HomePage = () => {
                 </div>
 
                 {/* Кнопка веде на сторінку всіх напрямів */}
-                <Link to="/student-directions" className='directions__all-directions-button'>
+                <Link to="/studentdirections" className='directions__all-directions-button'>
                     Усі напрями
                 </Link>
             </section>

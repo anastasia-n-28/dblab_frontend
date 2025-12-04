@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import API_CONFIG from '../config/api';
 import './styles/ClientPages.css';
 
@@ -15,20 +16,28 @@ const StudentDirections = () => {
                     description: d.description || d.direction_Description
                 })));
             })
-            .catch(error => console.error(error));
+            .catch(error => console.error("Error loading directions:", error));
     }, []);
 
     return (
         <div className="client-page">
             <h1 className="page-title">Напрями</h1>
-            <div className="cards-grid">
+            
+            <div className="cards-grid-squares">
                 {directions.map(dir => (
-                    <div key={dir.id} className="item-card" style={{flexDirection: 'column'}}>
-                        <div className="card-header">
-                            <h3 className="card-title">{dir.name}</h3>
+                    <Link 
+                        key={dir.id} 
+                        // Посилання веде на сторінку пропозицій з фільтром
+                        to={`/studentproposals?directionId=${dir.id}`} 
+                        className="card-link-wrapper"
+                    >
+                        <div className="item-card skill-card-visual">
+                            <h3 className="skill-title">{dir.name}</h3>
+                            <p className="skill-description">
+                                {dir.description || "Опис відсутній"}
+                            </p>
                         </div>
-                        <p className="card-description">{dir.description}</p>
-                    </div>
+                    </Link>
                 ))}
             </div>
         </div>

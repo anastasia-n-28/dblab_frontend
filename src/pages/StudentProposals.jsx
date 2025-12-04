@@ -164,7 +164,7 @@ const StudentProposals = () => {
                                 </div>
                             </div>
                             
-                            <p className="card-description">{proposal.description}</p>
+                            <p className="card-description-left">{proposal.description}</p>
                             
                             <div className="card-footer">
                                 <span style={{fontSize: '0.9rem', color: '#555'}}>Викладач:</span>
@@ -175,7 +175,7 @@ const StudentProposals = () => {
                         </div>
 
                         {proposal.status === 'Available' && (
-                            <button className="action-btn enroll-btn" onClick={() => handleEnroll(proposal.proposal_Id)}>
+                            <button className="enroll-btn-small" onClick={() => handleEnroll(proposal.proposal_Id)}>
                                 Записатися
                             </button>
                         )}
