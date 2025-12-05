@@ -14,7 +14,6 @@ const StudentProposals = () => {
     const [directions, setDirections] = useState([]);
     const [teachers, setTeachers] = useState([]);
     
-    // Фільтри
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedDirections, setSelectedDirections] = useState([]);
     const [selectedTeacher, setSelectedTeacher] = useState('');
@@ -23,7 +22,6 @@ const StudentProposals = () => {
     const authHeader = useAuthHeader();
     const [searchParams] = useSearchParams();
 
-    // 1. Завантаження даних
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -35,8 +33,8 @@ const StudentProposals = () => {
 
                 const enrichedProposals = propRes.data.map(p => ({
                     ...p,
-                    teacherName: teachRes.data.find(t => t.teacher_Id === p.teacher_Id)?.full_name || 'Unknown',
-                    directionName: dirRes.data.find(d => d.direction_Id === p.direction_Id)?.name || 'General'
+                    teacherName: teachRes.data.find(t => t.teacher_Id === p.teacher_Id)?.full_name || 'Невідомий',
+                    directionName: dirRes.data.find(d => d.direction_Id === p.direction_Id)?.name || 'Загальний'
                 }));
 
                 setProposals(enrichedProposals);
@@ -50,7 +48,6 @@ const StudentProposals = () => {
         fetchData();
     }, []);
 
-    // 2. Обробка URL параметрів (фільтр з головної сторінки)
     useEffect(() => {
         const dirId = searchParams.get('directionId');
         if (dirId) {
@@ -59,28 +56,24 @@ const StudentProposals = () => {
         }
     }, [searchParams]);
 
-    // 3. Логіка фільтрації
     useEffect(() => {
         let result = proposals;
 
-        // Пошук
         if (searchQuery) {
             result = result.filter(p => 
                 p.name.toLowerCase().includes(searchQuery.toLowerCase())
             );
         }
 
-        // Фільтр за Напрямами (Checkbox)
         if (selectedDirections.length > 0) {
             result = result.filter(p => selectedDirections.includes(p.direction_Id));
         }
 
-        // Фільтр за Викладачем (Select)
         if (selectedTeacher && selectedTeacher !== '') {
             result = result.filter(p => p.teacher_Id === parseInt(selectedTeacher));
         }
 
-        // Показуємо тільки доступні пропозиції
+        // Фільтрація за статусом (щоб не показувати вже зайняті)
         result = result.filter(p => p.status === 'Available');
 
         setFilteredProposals(result);
@@ -97,9 +90,20 @@ const StudentProposals = () => {
             alert("Будь ласка, увійдіть в систему або зареєструйтеся, щоб подати заявку.");
             return;
         }
+
+        // Перевірка ролі (дозволяємо студентам та адмінам для тестів)
         if (authUser.role && authUser.role !== 'student' && authUser.role !== 'admin') { 
              alert("Викладачі не можуть записуватися на теми.");
              return;
+        }
+
+        // Визначаємо правильний ID (він може бути user_Id або id)
+        const userId = authUser.user_Id || authUser.id;
+
+        if (!userId) {
+            console.error("Auth User Object:", authUser); // Для налагодження
+            alert("Помилка: Не знайдено ID користувача. Спробуйте вийти і зайти знову.");
+            return;
         }
 
         const confirm = window.confirm("Ви дійсно бажаєте записатися на цю тему?");
@@ -110,16 +114,21 @@ const StudentProposals = () => {
                 name: "Нова робота (Заявка)", 
                 attachment_date: new Date(),
                 proposal_Id: proposalId,
-                user_Id: authUser.user_Id,
+                user_Id: userId, // Використовуємо правильний ID
                 review: "Очікує підтвердження",
-                comment: "Заявка подана через сайт"
+                comment: "Заявка подана через сайт",
+                file: "" // Додаємо пусте поле file, щоб БД не лаялася
             }, {
                 headers: { 'Authorization': authHeader }
             });
+            
             alert("Заявку успішно подано! Викладач зв'яжеться з вами.");
+            // Можна додати оновлення списку або перехід на іншу сторінку
         } catch (error) {
-            console.error(error);
-            alert("Помилка при подачі заявки. Можливо, ви вже маєте активну роботу.");
+            console.error("Enrollment error:", error);
+            // Показуємо реальну помилку з сервера, якщо вона є
+            const serverMessage = error.response?.data?.message || error.message;
+            alert(`Помилка при подачі заявки: ${serverMessage}`);
         }
     };
 
@@ -127,7 +136,6 @@ const StudentProposals = () => {
         <div className="client-page">
             <h1 className="page-title">Доступні пропозиції</h1>
 
-            {/* Панель фільтрів */}
             <div className="filter-panel">
                 <div className="search-box">
                     <Search className="search-icon" size={20} />
@@ -174,7 +182,6 @@ const StudentProposals = () => {
                 </div>
             </div>
 
-            {/* Сітка карток або повідомлення про порожній список */}
             <div className="cards-grid-list">
                 {filteredProposals.length > 0 ? (
                     filteredProposals.map(proposal => (
@@ -208,7 +215,6 @@ const StudentProposals = () => {
                         </div>
                     ))
                 ) : (
-                    // БЛОК, ЯКИЙ ВІДОБРАЖАЄТЬСЯ, КОЛИ НЕМАЄ ПРОПОЗИЦІЙ
                     <div className="no-results-message">
                         <p>За обраними критеріями пропозицій не знайдено.</p>
                         <button 

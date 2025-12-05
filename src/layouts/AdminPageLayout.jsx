@@ -32,6 +32,7 @@ const AdminPageLayout = () => {
         {name: 'Conferences', path: '/apanel/conferences'},
         {name: 'Competitions', path: '/apanel/competitions'},
         {name: 'Statistics', path: '/apanel/statistics'},
+        {name: 'Reports', path: '/apanel/reports'},
     ];
 
     const authHeader = useAuthHeader();

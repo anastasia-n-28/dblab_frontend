@@ -40,7 +40,7 @@ import PeriodStatistics from './pages/adminPages/periodStatistics.jsx';
 import StudentProposals from './pages/StudentProposals';
 import StudentResults from './pages/StudentResults';
 import StudentDirections from './pages/StudentDirections';
-
+import ReportsPage from './pages/adminPages/ReportsPage.jsx';
 
 const App = () => {
 
@@ -86,6 +86,7 @@ const App = () => {
                     <Route path={"statistics"} element={<Statistics/>}></Route>
                     <Route path={"statistics/magazines"} element={<MagazineStatistics/>}></Route>
                     <Route path={"statistics/period"} element={<PeriodStatistics/>}></Route>
+                    <Route path={"reports"} element={<ReportsPage/>}></Route>
                 </Route>
             </Routes>
         </div>
