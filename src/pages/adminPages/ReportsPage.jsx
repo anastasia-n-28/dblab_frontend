@@ -3,7 +3,7 @@ import axios from 'axios';
 import API_CONFIG from '../../config/api';
 import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader';
 import { FileText, Download } from 'lucide-react';
-import '../styles/ClientPages.css'; // Використовуємо існуючі стилі карток
+import '../adminPages/styles/ReportsPage.css';
 
 const ReportsPage = () => {
     const authHeader = useAuthHeader();
@@ -12,7 +12,7 @@ const ReportsPage = () => {
         try {
             const response = await axios.get(`${API_CONFIG.BASE_URL}/report/${endpoint}`, {
                 headers: { 'Authorization': authHeader },
-                responseType: 'blob', // Важливо для завантаження файлів
+                responseType: 'blob',
             });
 
             // Створення посилання для скачування
@@ -23,6 +23,7 @@ const ReportsPage = () => {
             document.body.appendChild(link);
             link.click();
             link.remove();
+            window.URL.revokeObjectURL(url);
         } catch (error) {
             console.error("Error downloading file:", error);
             alert("Помилка при формуванні звіту");
@@ -30,35 +31,35 @@ const ReportsPage = () => {
     };
 
     return (
-        <div className="client-page" style={{paddingTop: '50px'}}>
-            <h1 className="page-title">Генерація звітів</h1>
+        <div className="reports-page">
+            <h1 className="reports-title">Генерація звітів</h1>
             
-            <div className="cards-grid-squares" style={{maxWidth: '800px'}}>
+            <div className="reports-grid">
                 {/* Картка для Плану */}
-                <div className="item-card skill-card-visual" onClick={() => downloadFile('plan', 'Plan_DBLAB.docx')}>
-                    <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px'}}>
-                        <FileText size={48} color="#009CCF" />
-                        <h3 className="skill-title">План роботи</h3>
-                        <p className="skill-description">
+                <div className="report-card" onClick={() => downloadFile('plan', 'Plan_DBLAB.docx')}>
+                    <div className="report-content">
+                        <FileText size={64} color="#009CCF" strokeWidth={1.5} />
+                        <h3 className="report-name">План роботи</h3>
+                        <p className="report-description">
                             Завантажити автоматично сформований план роботи гуртка (список студентів, викладачів).
                         </p>
-                        <span className="enroll-btn-small" style={{marginTop: '10px'}}>
-                            <Download size={16} style={{marginRight: '5px'}}/> Завантажити .DOCX
-                        </span>
+                        <button className="report-download-btn">
+                            <Download size={18} /> Завантажити .DOCX
+                        </button>
                     </div>
                 </div>
 
                 {/* Картка для Звіту */}
-                <div className="item-card skill-card-visual" onClick={() => downloadFile('year-report', 'Report_DBLAB.docx')}>
-                    <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px'}}>
-                        <FileText size={48} color="#009CCF" />
-                        <h3 className="skill-title">Річний звіт</h3>
-                        <p className="skill-description">
+                <div className="report-card" onClick={() => downloadFile('year-report', 'Report_DBLAB.docx')}>
+                    <div className="report-content">
+                        <FileText size={64} color="#009CCF" strokeWidth={1.5} />
+                        <h3 className="report-name">Річний звіт</h3>
+                        <p className="report-description">
                             Завантажити звіт про результати (публікації, конференції) за поточний рік.
                         </p>
-                        <span className="enroll-btn-small" style={{marginTop: '10px'}}>
-                            <Download size={16} style={{marginRight: '5px'}}/> Завантажити .DOCX
-                        </span>
+                        <button className="report-download-btn">
+                            <Download size={18} /> Завантажити .DOCX
+                        </button>
                     </div>
                 </div>
             </div>

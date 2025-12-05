@@ -58,11 +58,10 @@ const Proposal = () => {
             title: "Статус", 
             type: "select", 
             options: [
-                {id: 'Pending', name: 'Pending'}, 
-                {id: 'Approved', name: 'Approved'}, 
-                {id: 'Rejected', name: 'Rejected'},
-                {id: 'Available', name: 'Available'},
-                {id: 'Completed', name: 'Completed'}
+                {id: 'Запропоновано', name: 'Запропоновано'}, 
+                {id: 'Підтверджено', name: 'Підтверджено'},
+                {id: 'Відкладено', name: 'Відкладено'},
+                {id: 'Завершено', name: 'Завершено'}
             ] 
         },
         { 
@@ -70,9 +69,9 @@ const Proposal = () => {
             title: "Складність", 
             type: "select", 
             options: [
-                {id: 'Low', name: 'Low'}, 
-                {id: 'Medium', name: 'Medium'}, 
-                {id: 'High', name: 'High'}
+                {id: 'Низька', name: 'Низька'}, 
+                {id: 'Середня', name: 'Середня'}, 
+                {id: 'Висока', name: 'Висока'}
             ] 
         },
         { key: "teacher_Id", title: "Викладач", type: "select", options: teacherOptions },

@@ -114,10 +114,10 @@ const StudentProposals = () => {
                 name: "Нова робота (Заявка)", 
                 attachment_date: new Date(),
                 proposal_Id: proposalId,
-                user_Id: userId, // Використовуємо правильний ID
+                user_Id: userId,
                 review: "Очікує підтвердження",
                 comment: "Заявка подана через сайт",
-                file: "" // Додаємо пусте поле file, щоб БД не лаялася
+                file: "" // Додаємо пусте поле file
             }, {
                 headers: { 'Authorization': authHeader }
             });
