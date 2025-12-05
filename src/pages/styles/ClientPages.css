@@ -108,6 +108,82 @@ select.search-input {
     height: 18px;
 }
 
+/* --- ХЕДЕР КАРТКИ (Заголовок + Бейджі) --- */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.card-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0;
+    line-height: 1.2;
+    flex: 1;
+}
+
+.card-badges {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.badge {
+    display: inline-flex;       
+    align-items: center;
+    justify-content: center; 
+    height: 30px;
+    padding: 0 14px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.badge-blue { background: #e3f2fd; color: #009CCF; }
+.badge-gray { background: #f5f5f5; color: #666; }
+.badge-green { background: #e8f5e9; color: #2e7d32; }
+
+.card-description-left {
+    color: #555;
+    margin: 0 0 1.5rem 0;
+    line-height: 1.6;
+    text-align: left;
+    font-size: 0.95rem;
+}
+
+.card-footer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+    margin-top: auto;
+}
+
+.teacher-tags {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #888;
+}
+
+.teacher-tag {
+    background: #f5f5f5;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    color: #333;
+}
+
 /* Кнопка дії (Детальніше/Записатися - базова) */
 .action-btn {
     color: #009CCF;
@@ -126,4 +202,30 @@ select.search-input {
 .action-btn:hover {
     text-decoration: underline;
     color: #007ba3;
+}
+
+/* Кнопка "Записатися" */
+.enroll-btn-small {
+    background-color: #ffffff;
+    color: #009CCF;
+    border: 1px solid #009CCF;
+    padding: 0 20px;
+    height: 36px;
+    border-radius: 18px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.enroll-btn-small:hover {
+    background-color: #009CCF;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0, 156, 207, 0.3);
+    transform: translateY(-2px);
 }

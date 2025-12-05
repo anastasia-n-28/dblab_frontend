@@ -80,7 +80,7 @@ const StudentProposals = () => {
             result = result.filter(p => p.teacher_Id === parseInt(selectedTeacher));
         }
 
-        // Показуємо тільки доступні (за бажанням розкоментувати)
+        // Показуємо тільки доступні пропозиції
         result = result.filter(p => p.status === 'Available');
 
         setFilteredProposals(result);
@@ -92,15 +92,11 @@ const StudentProposals = () => {
         );
     };
 
-    // 4. Запис на тему
     const handleEnroll = async (proposalId) => {
-        // Перевірка авторизації
         if (!authUser) {
             alert("Будь ласка, увійдіть в систему або зареєструйтеся, щоб подати заявку.");
             return;
         }
-
-        // Перевірка ролі (тільки студенти)
         if (authUser.role && authUser.role !== 'student' && authUser.role !== 'admin') { 
              alert("Викладачі не можуть записуватися на теми.");
              return;
@@ -144,7 +140,6 @@ const StudentProposals = () => {
                     />
                 </div>
 
-                {/* Фільтр по Викладачу */}
                 <div className="filters-group">
                     <div className="filter-label"><User size={18} /> Викладач:</div>
                     <select 
@@ -179,39 +174,56 @@ const StudentProposals = () => {
                 </div>
             </div>
 
-            {/* Сітка карток */}
+            {/* Сітка карток або повідомлення про порожній список */}
             <div className="cards-grid-list">
-                {filteredProposals.map(proposal => (
-                    <div key={proposal.proposal_Id} className="item-card proposal-card">
-                        <div className="card-content">
-                            <div className="card-header">
-                                <h3 className="card-title">{proposal.name}</h3>
-                                <div className="card-badges">
-                                    <span className="badge badge-blue">{proposal.directionName}</span>
-                                    <span className={`badge ${proposal.status === 'Available' ? 'badge-green' : 'badge-gray'}`}>
-                                        {proposal.status}
-                                    </span>
+                {filteredProposals.length > 0 ? (
+                    filteredProposals.map(proposal => (
+                        <div key={proposal.proposal_Id} className="item-card proposal-card">
+                            <div className="card-content">
+                                <div className="card-header">
+                                    <h3 className="card-title">{proposal.name}</h3>
+                                    <div className="card-badges">
+                                        <span className="badge badge-blue">{proposal.directionName}</span>
+                                        <span className={`badge ${proposal.status === 'Available' ? 'badge-green' : 'badge-gray'}`}>
+                                            {proposal.status}
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
-                            
-                            {/* Опис вирівняно по лівому краю */}
-                            <p className="card-description-left">{proposal.description}</p>
-                            
-                            <div className="card-footer-row">
-                                <div className="teacher-tags">
-                                    <span className="label">Керівник: </span>
-                                    <span className="teacher-tag">{proposal.teacherName}</span>
-                                </div>
+                                
+                                <p className="card-description-left">{proposal.description}</p>
+                                
+                                <div className="card-footer-row">
+                                    <div className="teacher-tags">
+                                        <span className="label">Керівник: </span>
+                                        <span className="teacher-tag">{proposal.teacherName}</span>
+                                    </div>
 
-                                {proposal.status === 'Available' && (
-                                    <button className="enroll-btn-small" onClick={() => handleEnroll(proposal.proposal_Id)}>
-                                        Записатися ›
-                                    </button>
-                                )}
+                                    {proposal.status === 'Available' && (
+                                        <button className="enroll-btn-small" onClick={() => handleEnroll(proposal.proposal_Id)}>
+                                            Записатися
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         </div>
+                    ))
+                ) : (
+                    // БЛОК, ЯКИЙ ВІДОБРАЖАЄТЬСЯ, КОЛИ НЕМАЄ ПРОПОЗИЦІЙ
+                    <div className="no-results-message">
+                        <p>За обраними критеріями пропозицій не знайдено.</p>
+                        <button 
+                            className="action-btn" 
+                            onClick={() => {
+                                setSelectedDirections([]); 
+                                setSelectedTeacher(''); 
+                                setSearchQuery('');
+                            }}
+                            style={{margin: '0 auto'}}
+                        >
+                            Скинути фільтри
+                        </button>
                     </div>
-                ))}
+                )}
             </div>
         </div>
     );
