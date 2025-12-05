@@ -1,0 +1,38 @@
+.cards-grid-results {
+    display: grid;
+    grid-template-columns: 1fr; 
+    gap: 1.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.result-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border-left: 5px solid #009CCF; /* Синя смужка зліва */
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+
+.result-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,156,207,0.15);
+}
+
+.no-results {
+    text-align: center;
+    color: #666;
+    font-size: 1.2rem;
+    margin-top: 2rem;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+    margin-top: auto;
+}

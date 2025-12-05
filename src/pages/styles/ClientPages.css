@@ -1,4 +1,3 @@
-/* Загальний контейнер */
 .client-page {
     padding: 2rem 5%;
     background-color: #f8f9fa;
@@ -14,7 +13,7 @@
     font-weight: 700;
 }
 
-/* Панель фільтрів (біла плашка зверху) */
+/* === ПАНЕЛЬ ФІЛЬТРІВ === */
 .filter-panel {
     background: white;
     padding: 1.5rem;
@@ -27,19 +26,36 @@
     align-items: center;
 }
 
+/* Блок пошуку */
 .search-box {
     flex: 1;
     min-width: 250px;
     position: relative;
 }
 
+/* Поля вводу (Input & Select) */
 .search-input {
     width: 100%;
-    padding: 12px 15px 12px 40px;
+    height: 48px;
+    padding: 0 15px 0 40px;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
     font-size: 1rem;
     background-color: #f8f9fa;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+}
+
+/* Специфіка для Select */
+select.search-input {
+    padding-left: 15px;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px top 50%;
+    background-size: 12px auto;
 }
 
 .search-icon {
@@ -48,13 +64,14 @@
     top: 50%;
     transform: translateY(-50%);
     color: #999;
+    z-index: 1;
 }
 
+/* Група фільтрів (лейбл + поле) */
 .filters-group {
     display: flex;
-    gap: 1.5rem;
     align-items: center;
-    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .filter-label {
@@ -63,11 +80,16 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    white-space: nowrap;
 }
 
+/* Група чекбоксів (Напрями) */
 .checkbox-group {
     display: flex;
     gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap; 
+    width: 100%;
 }
 
 .custom-checkbox {
@@ -75,8 +97,9 @@
     align-items: center;
     gap: 0.5rem;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: #555;
+    user-select: none;
 }
 
 .custom-checkbox input {
@@ -85,270 +108,22 @@
     height: 18px;
 }
 
-/* Сітка карток */
-.cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(800px, 1fr));
-    gap: 1.5rem;
-}
-
-@media (max-width: 850px) {
-    .cards-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Картка */
-.item-card {
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    border-left: 5px solid #009CCF;
-    transition: transform 0.2s;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-}
-
-.item-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0,156,207,0.15);
-}
-
-.card-content {
-    flex: 1;
-}
-
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-}
-
-.card-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #2c3e50;
-    margin: 0;
-}
-
-.card-badges {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.badge {
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-
-.badge-blue { background: #e3f2fd; color: #009CCF; }
-.badge-gray { background: #f5f5f5; color: #666; }
-.badge-green { background: #e8f5e9; color: #2e7d32; }
-
-.card-description {
-    color: #666;
-    margin: 0.5rem 0 1rem 0;
-    line-height: 1.5;
-}
-
-.card-footer {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.teacher-tags {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.teacher-tag {
-    background: #eee;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: #444;
-}
-
+/* Кнопка дії (Детальніше/Записатися - базова) */
 .action-btn {
     color: #009CCF;
-    text-decoration: none;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    cursor: pointer;
     background: none;
     border: none;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
     padding: 0;
     font-size: 1rem;
+    transition: color 0.2s;
 }
 
 .action-btn:hover {
     text-decoration: underline;
-}
-
-.enroll-btn {
-    background-color: #009CCF;
-    color: white;
-    padding: 8px 20px;
-    border-radius: 20px;
-    text-decoration: none;
-    transition: background 0.3s;
-}
-
-.enroll-btn:hover {
-    background-color: #007ba3;
-    text-decoration: none;
-}
-
-.cards-grid-squares {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 2rem;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding-bottom: 2rem;
-    justify-content: center;
-}
-
-.card-link-wrapper {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-    height: 100%;
-}
-
-.skill-card-visual {
-    background: #fff;
-    border-radius: 16px;
-    border: 3px solid #009CCF; 
-    min-height: 250px; 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.skill-card-visual:hover {
-    background-color: #fff; 
-    transform: translateY(-8px);
-    box-shadow: 0 12px 24px rgba(0, 156, 207, 0.25);
-    border-color: #007ba3;
-}
-
-.skill-title {
-    color: #009CCF;
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin: 0 0 1rem 0;
-    transition: color 0.3s ease;
-    line-height: 1.3;
-}
-
-.skill-description {
-    color: #555;
-    font-size: 0.95rem;
-    line-height: 1.5;
-    margin: 0;
-    font-weight: 400;
-    transition: color 0.3s ease;
-    display: -webkit-box;
-    -webkit-line-clamp: 5;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-@media (max-width: 600px) {
-    .cards-grid-squares {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 1.5rem;
-    }
-    .skill-title {
-        font-size: 1.2rem;
-    }
-}
-
-.cards-grid-list {
-    display: grid;
-    grid-template-columns: 1fr; 
-    gap: 1.5rem;
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-.proposal-card {
-    border-left: 5px solid #009CCF;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-
-.card-description-left {
-    color: #555;
-    margin: 1rem 0;
-    line-height: 1.6;
-    text-align: left;
-    font-size: 0.95rem;
-}
-
-.card-footer-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 1rem;
-    border-top: 1px solid #eee;
-    margin-top: auto;
-}
-
-.teacher-info {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-}
-
-.teacher-info .label {
-    color: #888;
-}
-
-.teacher-info .value {
-    font-weight: 600;
-    color: #333;
-    background-color: #f5f5f5;
-    padding: 4px 8px;
-    border-radius: 4px;
-}
-
-.enroll-btn-small {
-    background-color: #ffffff;
-    color: #009CCF;
-    border: 1px solid #009CCF;
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.enroll-btn-small:hover {
-    background-color: #009CCF;
-    color: white;
-    transform: translateX(3px);
+    color: #007ba3;
 }

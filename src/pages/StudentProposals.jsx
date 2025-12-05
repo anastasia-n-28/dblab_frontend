@@ -3,30 +3,32 @@ import axios from 'axios';
 import API_CONFIG from '../config/api';
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser';
 import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader';
-import { Search, Filter, ChevronRight } from 'lucide-react';
-import './styles/ClientPages.css';
 import { useSearchParams } from 'react-router-dom';
+import { Search, Filter, User } from 'lucide-react';
+import './styles/ClientPages.css';
+import './styles/StudentProposals.css';
 
 const StudentProposals = () => {
     const [proposals, setProposals] = useState([]);
     const [filteredProposals, setFilteredProposals] = useState([]);
     const [directions, setDirections] = useState([]);
     const [teachers, setTeachers] = useState([]);
-    const [searchParams] = useSearchParams();
     
     // Фільтри
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedDirections, setSelectedDirections] = useState([]);
+    const [selectedTeacher, setSelectedTeacher] = useState('');
 
     const authUser = useAuthUser();
     const authHeader = useAuthHeader();
+    const [searchParams] = useSearchParams();
 
-    // Завантаження даних
+    // 1. Завантаження даних
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const [propRes, dirRes, teachRes] = await Promise.all([
-                    axios.get(`${API_CONFIG.BASE_URL}/proposal/getall`), // Тут можна без авторизації, якщо це публічна сторінка
+                    axios.get(`${API_CONFIG.BASE_URL}/proposal/getall`),
                     axios.get(`${API_CONFIG.BASE_URL}/direction/getall`),
                     axios.get(`${API_CONFIG.BASE_URL}/teacher/getall`)
                 ]);
@@ -48,38 +50,41 @@ const StudentProposals = () => {
         fetchData();
     }, []);
 
-    // useEffect для обробки URL параметрів
+    // 2. Обробка URL параметрів (фільтр з головної сторінки)
     useEffect(() => {
         const dirId = searchParams.get('directionId');
         if (dirId) {
             const id = parseInt(dirId);
-            if (!isNaN(id)) {
-                setSelectedDirections([id]);
-            }
+            if (!isNaN(id)) setSelectedDirections([id]);
         }
     }, [searchParams]);
 
-    // Логіка фільтрації
+    // 3. Логіка фільтрації
     useEffect(() => {
         let result = proposals;
 
-        // 1. Пошук за назвою
+        // Пошук
         if (searchQuery) {
             result = result.filter(p => 
                 p.name.toLowerCase().includes(searchQuery.toLowerCase())
             );
         }
 
-        // 2. Фільтр за напрямом (checkboxes)
+        // Фільтр за Напрямами (Checkbox)
         if (selectedDirections.length > 0) {
             result = result.filter(p => selectedDirections.includes(p.direction_Id));
         }
 
-        // 3. Показуємо тільки доступні пропозиції
+        // Фільтр за Викладачем (Select)
+        if (selectedTeacher && selectedTeacher !== '') {
+            result = result.filter(p => p.teacher_Id === parseInt(selectedTeacher));
+        }
+
+        // Показуємо тільки доступні (за бажанням розкоментувати)
         result = result.filter(p => p.status === 'Available');
 
         setFilteredProposals(result);
-    }, [searchQuery, selectedDirections, proposals]);
+    }, [searchQuery, selectedDirections, selectedTeacher, proposals]);
 
     const handleDirectionChange = (id) => {
         setSelectedDirections(prev => 
@@ -87,11 +92,18 @@ const StudentProposals = () => {
         );
     };
 
-    // Запис на тему
+    // 4. Запис на тему
     const handleEnroll = async (proposalId) => {
+        // Перевірка авторизації
         if (!authUser) {
-            alert("Будь ласка, увійдіть в систему, щоб записатися.");
+            alert("Будь ласка, увійдіть в систему або зареєструйтеся, щоб подати заявку.");
             return;
+        }
+
+        // Перевірка ролі (тільки студенти)
+        if (authUser.role && authUser.role !== 'student' && authUser.role !== 'admin') { 
+             alert("Викладачі не можуть записуватися на теми.");
+             return;
         }
 
         const confirm = window.confirm("Ви дійсно бажаєте записатися на цю тему?");
@@ -102,16 +114,16 @@ const StudentProposals = () => {
                 name: "Нова робота (Заявка)", 
                 attachment_date: new Date(),
                 proposal_Id: proposalId,
-                user_Id: authUser.user_Id, // Беремо ID залогіненого юзера
+                user_Id: authUser.user_Id,
                 review: "Очікує підтвердження",
                 comment: "Заявка подана через сайт"
             }, {
                 headers: { 'Authorization': authHeader }
             });
-            alert("Заявку успішно подано!");
+            alert("Заявку успішно подано! Викладач зв'яжеться з вами.");
         } catch (error) {
             console.error(error);
-            alert("Помилка при подачі заявки.");
+            alert("Помилка при подачі заявки. Можливо, ви вже маєте активну роботу.");
         }
     };
 
@@ -132,7 +144,25 @@ const StudentProposals = () => {
                     />
                 </div>
 
+                {/* Фільтр по Викладачу */}
                 <div className="filters-group">
+                    <div className="filter-label"><User size={18} /> Викладач:</div>
+                    <select 
+                        className="search-input" 
+                        style={{minWidth: '200px', paddingLeft: '15px'}}
+                        value={selectedTeacher}
+                        onChange={(e) => setSelectedTeacher(e.target.value)}
+                    >
+                        <option value="">Всі викладачі</option>
+                        {teachers.map(teacher => (
+                            <option key={teacher.teacher_Id} value={teacher.teacher_Id}>
+                                {teacher.full_name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="filters-group" style={{width: '100%', marginTop: '10px'}}>
                     <div className="filter-label"><Filter size={18} /> Напрями:</div>
                     <div className="checkbox-group">
                         {directions.map(dir => (
@@ -150,9 +180,9 @@ const StudentProposals = () => {
             </div>
 
             {/* Сітка карток */}
-            <div className="cards-grid">
+            <div className="cards-grid-list">
                 {filteredProposals.map(proposal => (
-                    <div key={proposal.proposal_Id} className="item-card">
+                    <div key={proposal.proposal_Id} className="item-card proposal-card">
                         <div className="card-content">
                             <div className="card-header">
                                 <h3 className="card-title">{proposal.name}</h3>
@@ -164,21 +194,22 @@ const StudentProposals = () => {
                                 </div>
                             </div>
                             
+                            {/* Опис вирівняно по лівому краю */}
                             <p className="card-description-left">{proposal.description}</p>
                             
-                            <div className="card-footer">
-                                <span style={{fontSize: '0.9rem', color: '#555'}}>Викладач:</span>
+                            <div className="card-footer-row">
                                 <div className="teacher-tags">
+                                    <span className="label">Керівник: </span>
                                     <span className="teacher-tag">{proposal.teacherName}</span>
                                 </div>
+
+                                {proposal.status === 'Available' && (
+                                    <button className="enroll-btn-small" onClick={() => handleEnroll(proposal.proposal_Id)}>
+                                        Записатися ›
+                                    </button>
+                                )}
                             </div>
                         </div>
-
-                        {proposal.status === 'Available' && (
-                            <button className="enroll-btn-small" onClick={() => handleEnroll(proposal.proposal_Id)}>
-                                Записатися
-                            </button>
-                        )}
                     </div>
                 ))}
             </div>

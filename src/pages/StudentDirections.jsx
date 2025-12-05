@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import API_CONFIG from '../config/api';
 import './styles/ClientPages.css';
+import './styles/StudentDirections.css';
 
 const StudentDirections = () => {
     const [directions, setDirections] = useState([]);
