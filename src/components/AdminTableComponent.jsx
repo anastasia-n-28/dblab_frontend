@@ -48,7 +48,7 @@ const AdminTableComponent = ({tableName, columns, endpoint, idField = "id"}) => 
         setLoading(true);
         axios.get(apiUrl + "/getFromDb", {
             headers: {
-                'Authorization': authHeader.split(' ')[1],
+                'Authorization': authHeader,
             }
         })
             .then((response) => {
@@ -94,7 +94,7 @@ const AdminTableComponent = ({tableName, columns, endpoint, idField = "id"}) => 
         const deleteCall = () => {
             axios.delete(`${apiUrl}/delete/${id}`, {
                 headers: {
-                    'Authorization': authHeader.split(' ')[1],
+                    'Authorization': authHeader,
                 }
             })
             .then(() => {
@@ -119,11 +119,9 @@ const AdminTableComponent = ({tableName, columns, endpoint, idField = "id"}) => 
         try {
             if (currentItem) {
                 // Update existing item
-                console.log(formData);
-                console.log(currentItem[idField]);
                 await axios.put(`${apiUrl}/${currentItem[idField]}`, formData, {
                     headers: {
-                        'Authorization': authHeader.split(' ')[1],
+                        'Authorization': authHeader,
                     }
                 })
                     .then((response) => {
@@ -139,11 +137,10 @@ const AdminTableComponent = ({tableName, columns, endpoint, idField = "id"}) => 
                     handleAdditionalFields("add", currentItem[idField]);
                 }, 100);
             } else {
-                console.log(formData);
                 let createdItemId = null;
                 await axios.post(apiUrl + "/create", formData, {
                     headers: {
-                        'Authorization': authHeader.split(' ')[1],
+                        'Authorization': authHeader,
                     }
                 })
                     .then((response) => {
@@ -189,7 +186,7 @@ const AdminTableComponent = ({tableName, columns, endpoint, idField = "id"}) => 
                     };
                     axios.post(additionalEndpoint, data, {
                         headers: {
-                            'Authorization': authHeader.split(' ')[1],
+                            'Authorization': authHeader,
                         }
                     })
                         .then((response) => {
@@ -208,7 +205,7 @@ const AdminTableComponent = ({tableName, columns, endpoint, idField = "id"}) => 
                 };
                 axios.delete(additionalEndpoint, {
                     headers: {
-                        'Authorization': authHeader.split(' ')[1],
+                        'Authorization': authHeader,
                     },
                     data: data
                 })
@@ -231,6 +228,16 @@ const AdminTableComponent = ({tableName, columns, endpoint, idField = "id"}) => 
     if (loading) {
         return <div className="loading">Loading data...</div>;
     }
+
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('uk-UA', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    };
 
     return (
         <div className="admin-table-container">
@@ -262,9 +269,12 @@ const AdminTableComponent = ({tableName, columns, endpoint, idField = "id"}) => 
                                     <td key={col.key}>
                                         {col.isMulti ? (
                                             item[col.key].map((subItem, index) => (
-                                                <span
-                                                    key={index}>{subItem}{index < item[col.key].length - 1 ? ', ' : ''}</span>
+                                                <span key={index}>
+                                                    {subItem}{index < item[col.key].length - 1 ? ', ' : ''}
+                                                </span>
                                             ))
+                                        ) : col.type === 'date' ? (
+                                            formatDate(item[col.key])
                                         ) : (
                                             item[col.key]
                                         )}

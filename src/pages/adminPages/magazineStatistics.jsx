@@ -18,7 +18,7 @@ const MagazineStatistics = () => {
         setLoading(true);
         axios.get(`${API_CONFIG.BASE_URL}/statistics/magazines`, {
             headers: {
-                'Authorization': authHeader ? authHeader.split(' ')[1] : '',
+                'Authorization': authHeader ? authHeader : '',
             }
         })
         .then((response) => {

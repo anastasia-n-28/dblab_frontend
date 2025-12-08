@@ -74,7 +74,7 @@ const StudentProposals = () => {
         }
 
         // Фільтрація за статусом (щоб не показувати вже зайняті)
-        result = result.filter(p => p.status === 'Available');
+        result = result.filter(p => p.status === 'Запропоновано');
 
         setFilteredProposals(result);
     }, [searchQuery, selectedDirections, selectedTeacher, proposals]);
@@ -112,7 +112,7 @@ const StudentProposals = () => {
         try {
             await axios.post(`${API_CONFIG.BASE_URL}/work/create`, {
                 name: "Нова робота (Заявка)", 
-                attachment_date: new Date(),
+                begining_date: new Date(),
                 proposal_Id: proposalId,
                 user_Id: userId,
                 review: "Очікує підтвердження",
@@ -191,7 +191,7 @@ const StudentProposals = () => {
                                     <h3 className="card-title">{proposal.name}</h3>
                                     <div className="card-badges">
                                         <span className="badge badge-blue">{proposal.directionName}</span>
-                                        <span className={`badge ${proposal.status === 'Available' ? 'badge-green' : 'badge-gray'}`}>
+                                        <span className={`badge ${proposal.status === 'Запропоновано' ? 'badge-green' : 'badge-gray'}`}>
                                             {proposal.status}
                                         </span>
                                     </div>
@@ -205,7 +205,7 @@ const StudentProposals = () => {
                                         <span className="teacher-tag">{proposal.teacherName}</span>
                                     </div>
 
-                                    {proposal.status === 'Available' && (
+                                    {proposal.status === 'Запропоновано' && (
                                         <button className="enroll-btn-small" onClick={() => handleEnroll(proposal.proposal_Id)}>
                                             Записатися
                                         </button>

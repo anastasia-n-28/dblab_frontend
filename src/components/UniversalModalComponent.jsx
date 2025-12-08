@@ -67,6 +67,17 @@ const UniversalModalComponent = ({modalName, data, rows, onSave, onCancel, onCha
                                         onChange={(e) => onChange(e, row)}
                                     />
                                 </>
+                            ) : row.type === "date" ? (
+                                <InputFieldComponent
+                                    label={row.title}
+                                    name={row.key}
+                                    type="date"
+                                    placeholder={row.title}
+                                    // Користувач побачить дату згідно своїх налаштувань (ДД.ММ.РРРР)
+                                    value={data[row.key] ? String(data[row.key]).split('T')[0] : ''}
+                                    onChange={(e) => onChange(e, row)}
+                                    disabled={isEditing && row.disabledOnEdit}
+                                />
                             ) : (
                                 <InputFieldComponent
                                     label={row.title}

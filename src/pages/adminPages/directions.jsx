@@ -11,7 +11,7 @@ const Direction = () => {
     useEffect(() => {
         axios.get(`${API_CONFIG.BASE_URL}/direction/getall`, {
             headers: {
-                'Authorization': authHeader.split(' ')[1],
+                'Authorization': authHeader,
             }
         })
         .then(response => {

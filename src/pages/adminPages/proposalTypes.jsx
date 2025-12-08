@@ -10,7 +10,7 @@ const ProposalType = () => {
     useEffect(() => {
         axios.get(`${API_CONFIG.BASE_URL}/proposalType/getall`, {
             headers: {
-                'Authorization': authHeader.split(' ')[1],
+                'Authorization': authHeader,
             }
         })
         .catch(error => {

@@ -10,7 +10,7 @@ const ResultType = () => {
     useEffect(() => {
         axios.get(`${API_CONFIG.BASE_URL}/resultType/getall`, {
             headers: {
-                'Authorization': authHeader.split(' ')[1],
+                'Authorization': authHeader,
             }
         })
         .catch(error => {

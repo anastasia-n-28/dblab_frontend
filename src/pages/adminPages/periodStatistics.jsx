@@ -21,7 +21,7 @@ const PeriodStatistics = () => {
             endYear: parseInt(endYear)
         }, {
             headers: {
-                'Authorization': authHeader ? authHeader.split(' ')[1] : '',
+                'Authorization': authHeader ? authHeader : '',
             }
         })
         .then((response) => {
@@ -117,4 +117,3 @@ const PeriodStatistics = () => {
 };
 
 export default PeriodStatistics;
-

@@ -11,7 +11,7 @@ const Work = () => {
 
     useEffect(() => {
         axios.get(`${API_CONFIG.BASE_URL}/proposal/getall`, {
-            headers: { 'Authorization': authHeader.split(' ')[1] }
+            headers: { 'Authorization': authHeader }
         })
         .then(response => {
             const options = response.data.map(item => ({
@@ -23,7 +23,7 @@ const Work = () => {
         .catch(err => console.error("Error fetching proposals:", err));
 
         axios.get(`${API_CONFIG.BASE_URL}/user/getall`, {
-            headers: { 'Authorization': authHeader.split(' ')[1] }
+            headers: { 'Authorization': authHeader }
         })
         .then(response => {
             const options = response.data.map(item => ({
@@ -38,11 +38,11 @@ const Work = () => {
 
     const columns = [
         { key: "work_Id", title: "ID" },
-        { key: "attachment_date", title: "Дата прикріплення", type: "date" },
-        { key: "review", title: "Перегляд" },
+        { key: "begining_date", title: "Дата прикріплення", type: "date" },
+        { key: "review", title: "Оцінка" },
         { key: "comment", title: "Коментар" },
         { key: "name", title: "Назва" },
-        { key: "file", title: "Файл", modalHidden: true }, // modalHidden приховає поле у формі
+        { key: "file", title: "Файл", modalHidden: true },
         { key: "proposal_Id", title: "Пропозиція", type: "select", options: proposalOptions },
         { key: "user_Id", title: "Користувач", type: "select", options: userOptions }
     ];

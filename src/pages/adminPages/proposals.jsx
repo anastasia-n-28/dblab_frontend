@@ -12,7 +12,7 @@ const Proposal = () => {
 
     useEffect(() => {
         axios.get(`${API_CONFIG.BASE_URL}/proposalType/getall`, {
-            headers: { 'Authorization': authHeader.split(' ')[1] }
+            headers: { 'Authorization': authHeader }
         })
         .then(response => {
             const options = response.data.map(item => ({
@@ -24,7 +24,7 @@ const Proposal = () => {
         .catch(err => console.error("Error fetching proposal types:", err));
 
         axios.get(`${API_CONFIG.BASE_URL}/direction/getall`, {
-            headers: { 'Authorization': authHeader.split(' ')[1] }
+            headers: { 'Authorization': authHeader }
         })
         .then(response => {
             const options = response.data.map(item => ({
@@ -36,7 +36,7 @@ const Proposal = () => {
         .catch(err => console.error("Error fetching directions:", err));
 
         axios.get(`${API_CONFIG.BASE_URL}/teacher/getall`, {
-            headers: { 'Authorization': authHeader.split(' ')[1] }
+            headers: { 'Authorization': authHeader }
         })
         .then(response => {
             const options = response.data.map(item => ({

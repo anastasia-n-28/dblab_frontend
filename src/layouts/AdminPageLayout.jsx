@@ -39,20 +39,21 @@ const AdminPageLayout = () => {
     const notificationRef = createRef();
 
     const handleUpdate = () => {
+        // Передаємо authHeader повністю, без .split
         axios.post(`${API_CONFIG.BASE_URL}/cache/update`, null, {
             headers: {
-                'Authorization': authHeader.split(' ')[1],
+                'Authorization': authHeader
             }
         })
-            .then(response => {
-                console.log('Cache updated successfully:', response.data);
-                alert("Cache updated successfully");
-                window.location.reload();
-            })
-            .catch(error => {
-                console.error('Error updating cache:', error);
-                alert("Error updating cache");
-            });
+        .then(response => {
+            console.log('Cache updated successfully:', response.data);
+            alert("Cache updated successfully");
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error('Error updating cache:', error);
+            alert("Error updating cache");
+        });
     }
 
     return (

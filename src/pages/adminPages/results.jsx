@@ -16,7 +16,7 @@ const Results = () => {
         // Fetch works
         axios.get(`${API_CONFIG.BASE_URL}/work/getFromDb`, {
             headers: {
-                'Authorization': authHeader.split(' ')[1],
+                'Authorization': authHeader,
             }
         })
             .then(response => {
@@ -33,7 +33,7 @@ const Results = () => {
         // Fetch result types
         axios.get(`${API_CONFIG.BASE_URL}/resultType/getFromDb`, {
             headers: {
-                'Authorization': authHeader.split(' ')[1],
+                'Authorization': authHeader,
             }
         })
             .then(response => {
@@ -50,7 +50,7 @@ const Results = () => {
         // Fetch magazines
         axios.get(`${API_CONFIG.BASE_URL}/magazine/getFromDb`, {
             headers: {
-                'Authorization': authHeader.split(' ')[1],
+                'Authorization': authHeader,
             }
         })
             .then(response => {
@@ -67,7 +67,7 @@ const Results = () => {
         // Fetch conferences
         axios.get(`${API_CONFIG.BASE_URL}/conference/getFromDb`, {
             headers: {
-                'Authorization': authHeader.split(' ')[1],
+                'Authorization': authHeader,
             }
         })
             .then(response => {
@@ -84,7 +84,7 @@ const Results = () => {
         // Fetch competitions
         axios.get(`${API_CONFIG.BASE_URL}/competition/getFromDb`, {
             headers: {
-                'Authorization': authHeader.split(' ')[1],
+                'Authorization': authHeader,
             }
         })
             .then(response => {

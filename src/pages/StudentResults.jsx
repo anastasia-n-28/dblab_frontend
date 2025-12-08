@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import API_CONFIG from '../config/api';
-import { Search, BookOpen, ChevronRight, Calendar, ArrowUpDown } from 'lucide-react'; // Додано нові іконки
+import { Search, BookOpen, ChevronRight, Calendar, ArrowUpDown } from 'lucide-react';
 import './styles/ClientPages.css';
 import './styles/StudentResults.css';
 
@@ -13,7 +13,8 @@ const StudentResults = () => {
     // Стани фільтрів
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedType, setSelectedType] = useState('All');
-    const [filterYear, setFilterYear] = useState('');
+    const [startYear, setStartYear] = useState('');
+    const [endYear, setEndYear] = useState('');
     const [sortOrder, setSortOrder] = useState('newest');
 
     useEffect(() => {
@@ -58,9 +59,15 @@ const StudentResults = () => {
             data = data.filter(r => r.result_type_Id === parseInt(selectedType));
         }
 
-        // 3. Фільтр за Роком
-        if (filterYear) {
-            data = data.filter(r => r.year && r.year.toString().includes(filterYear));
+        // Фільтр за діапазоном років
+        if (startYear || endYear) {
+            data = data.filter(r => {
+                const itemYear = r.year ? parseInt(r.year) : 0;
+                const start = startYear ? parseInt(startYear) : -Infinity;
+                const end = endYear ? parseInt(endYear) : Infinity;
+                
+                return itemYear >= start && itemYear <= end;
+            });
         }
 
         // 4. Сортування
@@ -85,7 +92,7 @@ const StudentResults = () => {
         });
 
         setFilteredResults(data);
-    }, [searchQuery, selectedType, filterYear, sortOrder, results]);
+    }, [searchQuery, selectedType, startYear, endYear, sortOrder, results]);
 
     return (
         <div className="client-page">
@@ -131,23 +138,36 @@ const StudentResults = () => {
                     </select>
                 </div>
 
-                {/* Рік публікації */}
+                {/* Інтерфейс вибору діапазону років */}
                 <div className="filters-group">
-                    <label htmlFor="year-filter" className="filter-label">
+                    <label className="filter-label">
                         <Calendar size={18} /> Рік:
                     </label>
-                    <input 
-                        type="number"
-                        id="year-filter"
-                        name="yearFilter"
-                        className="search-input"
-                        style={{width: '100px', paddingLeft: '15px'}}
-                        placeholder="Рік"
-                        value={filterYear}
-                        onChange={(e) => setFilterYear(e.target.value)}
-                        min="2000"
-                        max="2099"
-                    />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <input 
+                            type="number"
+                            id="start-year"
+                            className="search-input"
+                            style={{width: '80px', paddingLeft: '10px'}}
+                            placeholder="З"
+                            value={startYear}
+                            onChange={(e) => setStartYear(e.target.value)}
+                            min="2000"
+                            max="2099"
+                        />
+                        <span style={{ color: '#666' }}>-</span>
+                        <input 
+                            type="number"
+                            id="end-year"
+                            className="search-input"
+                            style={{width: '80px', paddingLeft: '10px'}}
+                            placeholder="По"
+                            value={endYear}
+                            onChange={(e) => setEndYear(e.target.value)}
+                            min="2000"
+                            max="2099"
+                        />
+                    </div>
                 </div>
 
                 {/* Сортування */}

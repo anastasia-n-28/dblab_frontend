@@ -11,7 +11,7 @@ const Competitions = () => {
     useEffect(() => {
         axios.get(`${API_CONFIG.BASE_URL}/conference/getFromDb`, {
             headers: {
-                'Authorization': authHeader.split(' ')[1],
+                'Authorization': authHeader,
             }
         })
             .then(response => {
@@ -29,7 +29,7 @@ const Competitions = () => {
     const columns = [
         { key: "competition_Id", title: "ID" },
         { key: "name", title: "Назва" },
-        { key: "approximate_date", title: "Дата" },
+        { key: "approximate_date", title: "Дата", type: "date" },
         { key: "host", title: "Організатор" },
         { key: "link", title: "Посилання" },
         { key: "conference_Id", title: "Конференція", type: "select", options: conferenceOptions, hidden: true },
