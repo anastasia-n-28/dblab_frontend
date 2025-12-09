@@ -4,7 +4,7 @@ import API_CONFIG from '../config/api';
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser';
 import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader';
 import { useSearchParams } from 'react-router-dom';
-import { Search, Filter, User } from 'lucide-react';
+import { Search, Filter, User, Tag } from 'lucide-react'; // Додана іконка Tag
 import { useToast } from '../context/ToastContext';
 import './styles/ClientPages.css';
 import './styles/StudentProposals.css';
@@ -12,12 +12,17 @@ import './styles/StudentProposals.css';
 const StudentProposals = () => {
     const [proposals, setProposals] = useState([]);
     const [filteredProposals, setFilteredProposals] = useState([]);
+    
+    // Списки для фільтрів
     const [directions, setDirections] = useState([]);
     const [teachers, setTeachers] = useState([]);
+    const [types, setTypes] = useState([]); // 1. Новий стейт для Типів
     
+    // Значення фільтрів
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedDirections, setSelectedDirections] = useState([]);
     const [selectedTeacher, setSelectedTeacher] = useState('');
+    const [selectedType, setSelectedType] = useState(''); // 2. Новий стейт вибраного Типу
 
     const authUser = useAuthUser();
     const authHeader = useAuthHeader();
@@ -27,22 +32,27 @@ const StudentProposals = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [propRes, dirRes, teachRes] = await Promise.all([
+                // 3. Додаємо запит на proposal_type/getall
+                const [propRes, dirRes, teachRes, typeRes] = await Promise.all([
                     axios.get(`${API_CONFIG.BASE_URL}/proposal/getall`),
                     axios.get(`${API_CONFIG.BASE_URL}/direction/getall`),
-                    axios.get(`${API_CONFIG.BASE_URL}/teacher/getall`)
+                    axios.get(`${API_CONFIG.BASE_URL}/teacher/getall`),
+                    axios.get(`${API_CONFIG.BASE_URL}/proposaltype/getall`) // Перевір endpoint!
                 ]);
 
+                // 4. Збагачуємо дані назвами типів
                 const enrichedProposals = propRes.data.map(p => ({
                     ...p,
                     teacherName: teachRes.data.find(t => t.teacher_Id === p.teacher_Id)?.full_name || 'Невідомий',
-                    directionName: dirRes.data.find(d => d.direction_Id === p.direction_Id)?.name || 'Загальний'
+                    directionName: dirRes.data.find(d => d.direction_Id === p.direction_Id)?.name || 'Загальний',
+                    typeName: typeRes.data.find(t => t.proposal_type_Id === p.proposal_type_Id)?.name || 'Інше'
                 }));
 
                 setProposals(enrichedProposals);
                 setFilteredProposals(enrichedProposals);
                 setDirections(dirRes.data);
                 setTeachers(teachRes.data);
+                setTypes(typeRes.data);
             } catch (error) {
                 console.error("Error loading data:", error);
             }
@@ -50,13 +60,7 @@ const StudentProposals = () => {
         fetchData();
     }, []);
 
-    useEffect(() => {
-        const dirId = searchParams.get('directionId');
-        if (dirId) {
-            const id = parseInt(dirId);
-            if (!isNaN(id)) setSelectedDirections([id]);
-        }
-    }, [searchParams]);
+    // ... (useEffect для URL params залишаємо) ...
 
     useEffect(() => {
         let result = proposals;
@@ -75,11 +79,15 @@ const StudentProposals = () => {
             result = result.filter(p => p.teacher_Id === parseInt(selectedTeacher));
         }
 
-        // Фільтрація за статусом (щоб не показувати вже зайняті)
+        // 5. Нова логіка фільтрації
+        if (selectedType && selectedType !== '') {
+            result = result.filter(p => p.proposal_type_Id === parseInt(selectedType));
+        }
+
         result = result.filter(p => p.status === 'Запропоновано');
 
         setFilteredProposals(result);
-    }, [searchQuery, selectedDirections, selectedTeacher, proposals]);
+    }, [searchQuery, selectedDirections, selectedTeacher, selectedType, proposals]); // Додай selectedType в залежності
 
     const handleDirectionChange = (id) => {
         setSelectedDirections(prev => 
@@ -92,21 +100,15 @@ const StudentProposals = () => {
             alert("Будь ласка, увійдіть в систему або зареєструйтеся, щоб подати заявку.");
             return;
         }
-
-        // Перевірка ролі (дозволяємо студентам та адмінам для тестів)
         if (authUser.role && authUser.role !== 'student' && authUser.role !== 'admin') { 
              alert("Викладачі не можуть записуватися на теми.");
              return;
         }
-
         const userId = authUser.user_Id || authUser.id;
-
         if (!userId) {
-            console.error("Auth User Object:", authUser); // Для налагодження
             alert("Помилка: Не знайдено ID користувача. Спробуйте вийти і зайти знову.");
             return;
         }
-
         const confirm = window.confirm("Ви дійсно бажаєте записатися на цю тему?");
         if (!confirm) return;
 
@@ -122,12 +124,9 @@ const StudentProposals = () => {
             }, {
                 headers: { 'Authorization': authHeader }
             });
-            
             addToast("Заявку успішно надіслано! Перевірте кабінет.", "success");
-            // Можна додати оновлення списку або перехід на іншу сторінку
         } catch (error) {
             console.error("Enrollment error:", error);
-            // Показуємо реальну помилку з сервера, якщо вона є
             const serverMessage = error.response?.data?.message || error.message;
             addToast(`Помилка при подачі заявки: ${serverMessage}`, "error");
         }
@@ -147,6 +146,24 @@ const StudentProposals = () => {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
+                </div>
+
+                {/* 6. Новий фільтр: Тип пропозиції */}
+                <div className="filters-group">
+                    <div className="filter-label"><Tag size={18} /> Тип:</div>
+                    <select 
+                        className="search-input" 
+                        style={{minWidth: '180px', paddingLeft: '15px'}}
+                        value={selectedType}
+                        onChange={(e) => setSelectedType(e.target.value)}
+                    >
+                        <option value="">Всі типи</option>
+                        {types.map(type => (
+                            <option key={type.proposal_type_Id} value={type.proposal_type_Id}>
+                                {type.name}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
                 <div className="filters-group">
@@ -200,17 +217,26 @@ const StudentProposals = () => {
                                 
                                 <p className="card-description-left">{proposal.description}</p>
                                 
-                                <div className="card-footer-row">
-                                    <div className="teacher-tags">
-                                        <span className="label">Керівник: </span>
-                                        <span className="teacher-tag">{proposal.teacherName}</span>
+                                <div className="card-footer-col"> {/* Змінили клас на колонку або додали обгортку */}
+                                    
+                                    {/* 7. Відображення типу пропозиції */}
+                                    <div className="proposal-type-row" style={{marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px', color: '#666', fontSize: '0.9rem'}}>
+                                        <Tag size={14} /> 
+                                        <span style={{fontWeight: 600}}>Тип:</span> {proposal.typeName}
                                     </div>
 
-                                    {proposal.status === 'Запропоновано' && (
-                                        <button className="enroll-btn-small" onClick={() => handleEnroll(proposal.proposal_Id)}>
-                                            Записатися
-                                        </button>
-                                    )}
+                                    <div className="card-footer-row">
+                                        <div className="teacher-tags">
+                                            <span className="label">Керівник: </span>
+                                            <span className="teacher-tag">{proposal.teacherName}</span>
+                                        </div>
+
+                                        {proposal.status === 'Запропоновано' && (
+                                            <button className="enroll-btn-small" onClick={() => handleEnroll(proposal.proposal_Id)}>
+                                                Записатися
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -224,6 +250,7 @@ const StudentProposals = () => {
                                 setSelectedDirections([]); 
                                 setSelectedTeacher(''); 
                                 setSearchQuery('');
+                                setSelectedType('');
                             }}
                             style={{margin: '0 auto'}}
                         >

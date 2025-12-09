@@ -118,8 +118,6 @@ const Dashboard = () => {
                 )}
             </div>
 
-            <hr className="divider" />
-
             {/* БЛОК 2: Мої Роботи */}
             <div className="dashboard-section">
                 <h2 className="section-title">Мої наукові роботи</h2>

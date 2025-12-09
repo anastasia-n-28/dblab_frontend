@@ -1,12 +1,15 @@
+/* === ЗАГАЛЬНИЙ ЛЕЙАУТ === */
 .client-page {
     padding: 2rem 5%;
-    background-color: var(--bg-secondary); /* Використовуємо змінну з index.css */
+    /* 👇 Виправлений колір фону (світло-сірий) */
+    background-color: var(--bg-color); 
     min-height: 100vh;
 }
 
 .page-title {
     text-align: center;
-    color: var(--primary-color);
+    /* 👇 Виправлений колір заголовка (темно-сірий) */
+    color: var(--text-color); 
     font-size: 2.2rem;
     margin-bottom: 2rem;
     font-weight: 700;
@@ -21,15 +24,15 @@
     display: inline-block;
 }
 
-/* === КНОПКИ === */
+/* === КНОПКИ (BUTTONS) === */
 
-/* Основна дія (Помаранчева - згідно палітри) */
+/* Основна кнопка (Помаранчева) */
 .action-btn, .enroll-btn-small {
     background-color: var(--secondary-color);
     color: var(--white);
     border: none;
     padding: 10px 24px;
-    border-radius: 25px; /* Можна використовувати var(--border-radius) або залишити округлі */
+    border-radius: 25px;
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
@@ -45,7 +48,7 @@
     transform: translateY(-2px);
 }
 
-/* Другорядна дія (Контурна блакитна) */
+/* Другорядна кнопка (Контурна) */
 .action-btn-outline {
     background: transparent;
     color: var(--primary-color);
@@ -65,7 +68,7 @@
     color: var(--white);
 }
 
-/* Кнопка "Скасувати" */
+/* Кнопка скасування (Текстова) */
 .cancel-btn-text {
     background: none;
     border: none;
@@ -81,11 +84,11 @@
 }
 
 .cancel-btn-text:hover {
-    color: #d32f2f; /* Червоний залишаємо для семантики небезпеки */
+    color: #d32f2f;
     text-decoration: underline;
 }
 
-/* === КАРТКИ === */
+/* === КАРТКИ (GENERIC CARDS) === */
 .item-card {
     background: var(--white);
     border-radius: var(--border-radius);
@@ -97,20 +100,19 @@
 
 .item-card:hover {
     transform: translateY(-4px);
-    /* Тінь трохи інтенсивніша при ховері */
-    box-shadow: 0 10px 20px rgba(0,0,0,0.15); 
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
 }
 
-/* Акценти карток */
+/* Статуси карток - РОБИМО СМУЖКУ ШИРШОЮ */
 .request-card {
-    border-left: 5px solid #FFC107; /* Жовтий (Статус) */
+    border-left: 5px solid var(--secondary-color); 
 }
 
 .work-card-active {
-    border-left: 5px solid var(--primary-color); /* Блакитний (Статус) */
+    border-left: 5px solid var(--primary-color); 
 }
 
-/* === ХЕДЕР КАРТКИ === */
+/* === ЗАГОЛОВКИ КАРТОК === */
 .card-header {
     display: flex;
     justify-content: space-between;
@@ -125,22 +127,38 @@
     font-weight: 600;
 }
 
-/* === ФІЛЬТРИ === */
+/* === ФІЛЬТРИ (FILTERS UI) === */
 .filter-panel {
     background: var(--white);
     padding: 1.5rem;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     margin-bottom: 2rem;
-    border-top: 4px solid var(--primary-color);
+    border-top: none; 
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.search-box {
+    flex: 1;
+    min-width: 250px;
+    position: relative;
 }
 
 .search-input {
+    width: 100%;
+    height: 48px;
+    padding: 0 15px 0 40px; /* Місце під іконку */
     border: 1px solid #ddd;
     border-radius: var(--border-radius);
+    font-size: 1rem;
     background-color: var(--white);
-    padding: 10px;
-    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    color: var(--text-color);
 }
 
 .search-input:focus {
@@ -149,61 +167,17 @@
     box-shadow: 0 0 0 3px rgba(0, 148, 200, 0.1);
 }
 
-/* === ПАНЕЛЬ ФІЛЬТРІВ === */
-.filter-panel {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    margin-bottom: 2rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    align-items: center;
-}
-
-/* Блок пошуку */
-.search-box {
-    flex: 1;
-    min-width: 250px;
-    position: relative;
-}
-
-/* Поля вводу (Input & Select) */
-.search-input {
-    width: 100%;
-    height: 48px;
-    padding: 0 15px 0 40px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 1rem;
-    background-color: #f8f9fa;
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-}
-
-/* Специфіка для Select */
-select.search-input {
-    padding-left: 15px;
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-    background-repeat: no-repeat;
-    background-position: right 15px top 50%;
-    background-size: 12px auto;
-}
-
+/* Іконка пошуку */
 .search-icon {
     position: absolute;
     left: 12px;
     top: 50%;
     transform: translateY(-50%);
-    color: #999;
+    color: var(--text-light);
     z-index: 1;
 }
 
-/* Група фільтрів (лейбл + поле) */
+/* Лейбли фільтрів */
 .filters-group {
     display: flex;
     align-items: center;
@@ -212,20 +186,19 @@ select.search-input {
 
 .filter-label {
     font-weight: 600;
-    color: #333;
+    color: var(--text-color);
     display: flex;
     align-items: center;
     gap: 0.5rem;
     white-space: nowrap;
 }
 
-/* Група чекбоксів (Напрями) */
+/* Чекбокси */
 .checkbox-group {
     display: flex;
     gap: 1rem;
     align-items: center;
     flex-wrap: wrap; 
-    width: 100%;
 }
 
 .custom-checkbox {
@@ -234,157 +207,22 @@ select.search-input {
     gap: 0.5rem;
     cursor: pointer;
     font-size: 0.95rem;
-    color: #555;
+    color: var(--text-light);
     user-select: none;
 }
 
 .custom-checkbox input {
-    accent-color: #009CCF;
+    accent-color: var(--primary-color);
     width: 18px;
     height: 18px;
 }
 
-/* --- ХЕДЕР КАРТКИ (Заголовок + Бейджі) --- */
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1.5rem;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
+/* === СЕКЦІЇ (ВІДСТУПИ) === */
+.dashboard-section {
+    margin-bottom: 4rem; /* Великий відступ замість лінії (Whitespace) */
 }
 
-.card-title {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #2c3e50;
-    margin: 0;
-    line-height: 1.2;
-    flex: 1;
-}
-
-.card-badges {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    flex-shrink: 0;
-}
-
-.badge {
-    display: inline-flex;       
-    align-items: center;
-    justify-content: center; 
-    height: 30px;
-    padding: 0 14px;
-    border-radius: 15px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    white-space: nowrap;
-    line-height: 1;
-}
-
-.badge-blue { background: #e3f2fd; color: #009CCF; }
-.badge-gray { background: #f5f5f5; color: #666; }
-.badge-green { background: #e8f5e9; color: #2e7d32; }
-
-.card-description-left {
-    color: #555;
-    margin: 0 0 1.5rem 0;
-    line-height: 1.6;
-    text-align: left;
-    font-size: 0.95rem;
-}
-
-.card-footer-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 1rem;
-    border-top: 1px solid #eee;
-    margin-top: auto;
-}
-
-.teacher-tags {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-    color: #888;
-}
-
-.teacher-tag {
-    background: #f5f5f5;
-    padding: 5px 10px;
-    border-radius: 6px;
-    font-weight: 600;
-    color: #333;
-}
-
-/* Кнопка дії (Детальніше/Записатися - базова) */
-.action-btn {
-    color: #009CCF;
-    background: none;
-    border: none;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 0;
-    font-size: 1rem;
-    transition: color 0.2s;
-}
-
-.action-btn:hover {
-    text-decoration: underline;
-    color: #007ba3;
-}
-
-/* Кнопка "Записатися" */
-.enroll-btn-small {
-    background-color: #ffffff;
-    color: #009CCF;
-    border: 1px solid #009CCF;
-    padding: 0 20px;
-    height: 36px;
-    border-radius: 18px;
-    font-size: 0.85rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-}
-
-.enroll-btn-small:hover {
-    background-color: #009CCF;
-    color: white;
-    box-shadow: 0 4px 10px rgba(0, 156, 207, 0.3);
-    transform: translateY(-2px);
-}
-
-/* Чиста типографіка */
-.client-page {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: 'Inter', sans-serif;
-    color: #333;
-}
-
-.page-title {
-    font-weight: 600;
-    font-size: 24px;
-    margin-bottom: 24px;
-    color: #111;
-}
-
-/* Принцип Tufte: Small Multiples (картки) */
-.cards-grid-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 16px;
+/* Якщо десь залишився клас divider, прибираємо його відображення */
+.divider {
+    display: none;
 }
