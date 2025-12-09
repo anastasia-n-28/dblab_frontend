@@ -7,6 +7,12 @@ import API_CONFIG from '../../config/api.js';
 const Work = () => {
     const [proposalOptions, setProposalOptions] = useState([]);
     const [userOptions, setUserOptions] = useState([]);
+    const statusOptions = [
+        { id: 'В обробці', name: 'В обробці' },
+        { id: 'Активна', name: 'Активна' },
+        { id: 'Завершена', name: 'Завершена' },
+        { id: 'Відхилена', name: 'Відхилена' }
+    ];
     const authHeader = useAuthHeader();
 
     useEffect(() => {
@@ -38,7 +44,15 @@ const Work = () => {
 
     const columns = [
         { key: "work_Id", title: "ID" },
+        { 
+            key: "status", 
+            title: "Статус", 
+            type: "select", 
+            options: statusOptions,
+            editable: true
+        },
         { key: "begining_date", title: "Дата прикріплення", type: "date" },
+        { key: "changes_date", title: "Останні зміни", type: "date" },
         { key: "review", title: "Оцінка" },
         { key: "comment", title: "Коментар" },
         { key: "name", title: "Назва" },

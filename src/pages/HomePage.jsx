@@ -188,7 +188,7 @@ const HomePage = () => {
 
                 {/* Кнопка веде на сторінку всіх напрямів */}
                 <Link to="/studentdirections" className='directions__all-directions-button'>
-                    Усі напрями
+                    Усі напрями роботи гуртка
                 </Link>
             </section>
 

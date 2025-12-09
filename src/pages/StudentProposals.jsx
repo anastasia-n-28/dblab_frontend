@@ -5,6 +5,7 @@ import useAuthUser from 'react-auth-kit/hooks/useAuthUser';
 import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader';
 import { useSearchParams } from 'react-router-dom';
 import { Search, Filter, User } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
 import './styles/ClientPages.css';
 import './styles/StudentProposals.css';
 
@@ -21,6 +22,7 @@ const StudentProposals = () => {
     const authUser = useAuthUser();
     const authHeader = useAuthHeader();
     const [searchParams] = useSearchParams();
+    const { addToast } = useToast();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -97,7 +99,6 @@ const StudentProposals = () => {
              return;
         }
 
-        // Визначаємо правильний ID (він може бути user_Id або id)
         const userId = authUser.user_Id || authUser.id;
 
         if (!userId) {
@@ -110,25 +111,25 @@ const StudentProposals = () => {
         if (!confirm) return;
 
         try {
-            await axios.post(`${API_CONFIG.BASE_URL}/work/create`, {
+            await axios.post(`${API_CONFIG.BASE_URL}/work/student/create`, {
                 name: "Нова робота (Заявка)", 
                 begining_date: new Date(),
                 proposal_Id: proposalId,
                 user_Id: userId,
                 review: "Очікує підтвердження",
                 comment: "Заявка подана через сайт",
-                file: "" // Додаємо пусте поле file
+                file: "" 
             }, {
                 headers: { 'Authorization': authHeader }
             });
             
-            alert("Заявку успішно подано! Викладач зв'яжеться з вами.");
+            addToast("Заявку успішно надіслано! Перевірте кабінет.", "success");
             // Можна додати оновлення списку або перехід на іншу сторінку
         } catch (error) {
             console.error("Enrollment error:", error);
             // Показуємо реальну помилку з сервера, якщо вона є
             const serverMessage = error.response?.data?.message || error.message;
-            alert(`Помилка при подачі заявки: ${serverMessage}`);
+            addToast(`Помилка при подачі заявки: ${serverMessage}`, "error");
         }
     };
 

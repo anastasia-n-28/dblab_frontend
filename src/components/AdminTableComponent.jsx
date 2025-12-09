@@ -44,6 +44,26 @@ const AdminTableComponent = ({tableName, columns, endpoint, idField = "id"}) => 
         });
     }
 
+    const handleInlineUpdate = async (id, field, value) => {
+        const confirmMessage = `Ви дійсно хочете змінити статус на "${value}"?`;
+        if (!window.confirm(confirmMessage)) {
+            fetchData();
+            return;
+        }
+
+        try {
+            await axios.put(`${apiUrl}/${id}`, 
+                { [field]: value },
+                { headers: { 'Authorization': authHeader } }
+            );
+            notifySuccess("Статус успішно оновлено");
+            fetchData();
+        } catch (error) {
+            console.error("Update error:", error);
+            notifyError("Помилка оновлення: " + error.message);
+        }
+    };
+
     const fetchData = () => {
         setLoading(true);
         axios.get(apiUrl + "/getFromDb", {
@@ -267,16 +287,41 @@ const AdminTableComponent = ({tableName, columns, endpoint, idField = "id"}) => 
                             {columns.map(col => (
                                 !col.hidden && (
                                     <td key={col.key}>
-                                        {col.isMulti ? (
-                                            item[col.key].map((subItem, index) => (
-                                                <span key={index}>
-                                                    {subItem}{index < item[col.key].length - 1 ? ', ' : ''}
-                                                </span>
-                                            ))
-                                        ) : col.type === 'date' ? (
-                                            formatDate(item[col.key])
+                                        {/* 👇 НОВА ЛОГІКА ДЛЯ РЕДАГУВАННЯ */}
+                                        {col.editable && col.type === 'select' ? (
+                                            <select
+                                                className="status-select"
+                                                value={item[col.key]}
+                                                onChange={(e) => handleInlineUpdate(item[idField], col.key, e.target.value)}
+                                                style={{
+                                                    padding: '5px 10px',
+                                                    borderRadius: '5px',
+                                                    border: '1px solid #ddd',
+                                                    cursor: 'pointer',
+                                                    backgroundColor: 
+                                                        item[col.key] === 'Активна' ? '#e8f5e9' : 
+                                                        item[col.key] === 'Відхилена' ? '#ffebee' : '#fff3e0'
+                                                }}
+                                            >
+                                                {col.options.map(opt => (
+                                                    <option key={opt.id} value={opt.id}>
+                                                        {opt.name}
+                                                    </option>
+                                                ))}
+                                            </select>
                                         ) : (
-                                            item[col.key]
+                                            /* залишається як fallback */
+                                            col.isMulti ? (
+                                                item[col.key].map((subItem, index) => (
+                                                    <span key={index}>
+                                                        {subItem}{index < item[col.key].length - 1 ? ', ' : ''}
+                                                    </span>
+                                                ))
+                                            ) : col.type === 'date' ? (
+                                                formatDate(item[col.key])
+                                            ) : (
+                                                item[col.key]
+                                            )
                                         )}
                                     </td>
                                 )

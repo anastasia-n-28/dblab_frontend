@@ -1,5 +1,6 @@
 import './App.css'
 import {Route, Routes} from "react-router-dom";
+import { RequireAuth } from 'react-auth-kit';
 
 import HomePage from "./pages/HomePage.jsx";
 import CoursesPage from "./pages/CoursesPage.jsx";
@@ -41,6 +42,8 @@ import StudentProposals from './pages/StudentProposals';
 import StudentResults from './pages/StudentResults';
 import StudentDirections from './pages/StudentDirections';
 import ReportsPage from './pages/adminPages/ReportsPage.jsx';
+import Dashboard from './pages/Dashboard.jsx';
+import StudentWorkDetails from './pages/StudentWorkDetails';
 
 const App = () => {
 
@@ -59,6 +62,8 @@ const App = () => {
                     <Route path={"/studentproposals"} element={<StudentProposals/>}/>
                     <Route path={"/studentresults"} element={<StudentResults/>}/>
                     <Route path={"/studentdirections"} element={<StudentDirections/>}/>
+                    <Route path={"/dashboard"} element={<Dashboard/>}/>
+                    <Route path="/work/:id" element={<RequireAuth fallbackPath="/login"><StudentWorkDetails/></RequireAuth>} />
                 </Route>
                 <Route path={'/apanel'} Component={AdminLayout}>
                     <Route path={"teachers"} element={<Teachers/>}></Route>
