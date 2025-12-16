@@ -3,7 +3,6 @@ import axios from "axios";
 import UniversalModalComponent from "./UniversalModalComponent.jsx";
 import { NotificationContext } from "../layouts/AdminPageLayout.jsx";
 import API_CONFIG from '../config/api.js';
-
 import './styles/AdminTable.css';
 import useAuthHeader from "react-auth-kit/hooks/useAuthHeader";
 
@@ -287,7 +286,6 @@ const AdminTableComponent = ({tableName, columns, endpoint, idField = "id"}) => 
                             {columns.map(col => (
                                 !col.hidden && (
                                     <td key={col.key}>
-                                        {/* 👇 НОВА ЛОГІКА ДЛЯ РЕДАГУВАННЯ */}
                                         {col.editable && col.type === 'select' ? (
                                             <select
                                                 className="status-select"

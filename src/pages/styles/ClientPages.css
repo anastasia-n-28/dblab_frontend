@@ -1,14 +1,12 @@
 /* === ЗАГАЛЬНИЙ ЛЕЙАУТ === */
 .client-page {
     padding: 2rem 5%;
-    /* 👇 Виправлений колір фону (світло-сірий) */
     background-color: var(--bg-color); 
     min-height: 100vh;
 }
 
 .page-title {
     text-align: center;
-    /* 👇 Виправлений колір заголовка (темно-сірий) */
     color: var(--text-color); 
     font-size: 2.2rem;
     margin-bottom: 2rem;
@@ -103,9 +101,20 @@
     box-shadow: 0 10px 20px rgba(0,0,0,0.15);
 }
 
-/* Статуси карток - РОБИМО СМУЖКУ ШИРШОЮ */
+/* Помаранчевий - в очікуванні */
 .request-card {
     border-left: 5px solid var(--secondary-color); 
+}
+
+/* Сірий - для відхилених */
+.rejected-card {
+    border-left: 5px solid #9e9e9e;
+    opacity: 0.8;
+}
+
+/* Блакитний - для активних */
+.work-card-active {
+    border-left: 5px solid var(--primary-color); 
 }
 
 .work-card-active {
@@ -225,4 +234,42 @@
 /* Якщо десь залишився клас divider, прибираємо його відображення */
 .divider {
     display: none;
+}
+
+.card-footer-right {
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+    margin-top: auto;
+}
+
+.feedback-box {
+    background-color: #fff3e0;
+    padding: 10px;
+    border-radius: 8px;
+    color: #e65100;
+    display: inline-block;
+    max-width: 100%;
+}
+
+
+.complexity-dots {
+    display: flex;
+    gap: 4px;
+}
+
+.complexity-dots span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    display: inline-block;
+}
+
+.proposal-card[data-complexity="high"] .complexity-dots span:nth-child(-n+5) {
+    background-color: #F59650;
+}
+.proposal-card[data-complexity="medium"] .complexity-dots span:nth-child(-n+3) {
+    background-color: #F59650;
 }

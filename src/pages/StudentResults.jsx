@@ -9,8 +9,7 @@ const StudentResults = () => {
     const [results, setResults] = useState([]);
     const [filteredResults, setFilteredResults] = useState([]);
     const [resultTypes, setResultTypes] = useState([]);
-    
-    // Стани фільтрів
+
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedType, setSelectedType] = useState('All');
     const [startYear, setStartYear] = useState('');
@@ -42,7 +41,6 @@ const StudentResults = () => {
         fetchData();
     }, []);
 
-    // Ефект для фільтрації та сортування
     useEffect(() => {
         let data = [...results];
 

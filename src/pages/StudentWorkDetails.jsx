@@ -20,8 +20,8 @@ const StudentWorkDetails = () => {
         name: '',
         year: new Date().getFullYear(),
         pages: '',
-        full_name: '', // Бібліографічний опис
-        result_type_Id: 1 // За замовчуванням (або треба вантажити типи)
+        full_name: '',
+        result_type_Id: 1
     });
 
     const fetchData = async () => {
@@ -30,7 +30,7 @@ const StudentWorkDetails = () => {
             // Оскільки окремого getOne немає, беремо зі списку user's works (тимчасово)
             // Або можна додати route GET /work/:id в work.js для студента
             const authUser = JSON.parse(localStorage.getItem('_auth_state') || '{}');
-            const userId = authUser.id || authUser.user_Id; // Хакий спосіб дістати ID якщо useAuthUser глючить
+            const userId = authUser.id || authUser.user_Id;
 
             // Запит робіт користувача
             const workRes = await axios.get(`${API_CONFIG.BASE_URL}/work/user/${userId}`, {
