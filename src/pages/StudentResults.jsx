@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import API_CONFIG from '../config/api';
+import { useNavigate } from 'react-router-dom';
 import { Search, BookOpen, ChevronRight, Calendar, ArrowUpDown } from 'lucide-react';
 import './styles/ClientPages.css';
 import './styles/StudentResults.css';
@@ -9,6 +10,7 @@ const StudentResults = () => {
     const [results, setResults] = useState([]);
     const [filteredResults, setFilteredResults] = useState([]);
     const [resultTypes, setResultTypes] = useState([]);
+    const navigate = useNavigate();
 
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedType, setSelectedType] = useState('All');
@@ -44,7 +46,6 @@ const StudentResults = () => {
     useEffect(() => {
         let data = [...results];
 
-        // 1. Пошук (Назва або Автор)
         if (searchQuery) {
             data = data.filter(r => 
                 r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -52,12 +53,10 @@ const StudentResults = () => {
             );
         }
 
-        // 2. Фільтр за Типом
         if (selectedType !== 'All') {
             data = data.filter(r => r.result_type_Id === parseInt(selectedType));
         }
 
-        // Фільтр за діапазоном років
         if (startYear || endYear) {
             data = data.filter(r => {
                 const itemYear = r.year ? parseInt(r.year) : 0;
@@ -68,7 +67,6 @@ const StudentResults = () => {
             });
         }
 
-        // 4. Сортування
         data.sort((a, b) => {
             const yearA = a.year || 0;
             const yearB = b.year || 0;
@@ -192,31 +190,49 @@ const StudentResults = () => {
 
             <div className="cards-grid-results">
                 {filteredResults.length > 0 ? (
-                    filteredResults.map(result => (
-                        <div key={result.result_Id} className="item-card result-card">
-                            <div className="card-content">
-                                <div className="card-header">
-                                    <h3 className="card-title">{result.name}</h3>
-                                    <div className="card-badges">
-                                        <span className="badge badge-blue">{result.typeName}</span>
-                                        <span className="badge badge-gray">{result.year} рік</span>
+                    filteredResults.map(result => {
+                        const handleCardClick = () => {
+                            if (result.work_Id) {
+                                navigate(`/workpage/${result.work_Id}`);
+                            }
+                        };
+                        
+                        return (
+                            <div 
+                                key={result.result_Id} 
+                                className="item-card result-card clickable-result-card"
+                                onClick={result.work_Id ? handleCardClick : undefined}
+                                style={result.work_Id ? { cursor: 'pointer' } : {}}
+                            >
+                                <div className="card-content">
+                                    <div className="card-header">
+                                        <h3 className="card-title">{result.name}</h3>
+                                        <div className="card-badges">
+                                            <span className="badge badge-blue">{result.typeName}</span>
+                                            <span className="badge badge-gray">{result.year} рік</span>
+                                        </div>
                                     </div>
-                                </div>
-                                
-                                <p className="card-description-left">
-                                    Автор: <strong>{result.full_name}</strong>
-                                    <br/>
-                                    {result.pages ? `Обсяг: ${result.pages} стор.` : ''}
-                                </p>
-                                
-                                <div className="card-footer">
-                                    <button className="action-btn" onClick={() => alert(`Деталі про: ${result.name}`)}>
-                                        Детальніше <ChevronRight size={16} />
-                                    </button>
+                                    
+                                    <p className="card-description-left">
+                                        Автор: <strong>{result.full_name}</strong>
+                                        <br/>
+                                        {result.pages ? `Обсяг: ${result.pages} стор.` : ''}
+                                    </p>
+                                    
+                                    {result.work_Id && (
+                                        <div className="card-footer" onClick={(e) => e.stopPropagation()}>
+                                            <button 
+                                                className="action-btn" 
+                                                onClick={handleCardClick}
+                                            >
+                                                Детальніше <ChevronRight size={16} />
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
-                        </div>
-                    ))
+                        );
+                    })
                 ) : (
                     <div className="no-results">Результатів не знайдено.</div>
                 )}

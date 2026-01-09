@@ -13,6 +13,7 @@ const AdminTableComponent = ({tableName, columns, endpoint, idField = "id"}) => 
     const [currentItem, setCurrentItem] = useState(null);
     const [formData, setFormData] = useState({});
     const [isDeleteWithoutConfirmation, setIsDeleteWithoutConfirmation] = useState(false);
+    const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
     const apiUrl = `${API_CONFIG.BASE_URL}/${endpoint}`;
     const authHeader = useAuthHeader();
@@ -44,7 +45,11 @@ const AdminTableComponent = ({tableName, columns, endpoint, idField = "id"}) => 
     }
 
     const handleInlineUpdate = async (id, field, value) => {
-        const confirmMessage = `Ви дійсно хочете змінити статус на "${value}"?`;
+        const column = columns.find(col => col.key === field);
+        const fieldName = column ? column.title : field;
+        const option = column?.options?.find(opt => opt.id === value);
+        const displayValue = option ? option.name : value;
+        const confirmMessage = `Ви дійсно хочете змінити "${fieldName}" на "${displayValue}"?`;
         if (!window.confirm(confirmMessage)) {
             fetchData();
             return;
@@ -55,7 +60,7 @@ const AdminTableComponent = ({tableName, columns, endpoint, idField = "id"}) => 
                 { [field]: value },
                 { headers: { 'Authorization': authHeader } }
             );
-            notifySuccess("Статус успішно оновлено");
+            notifySuccess(`${fieldName} успішно оновлено`);
             fetchData();
         } catch (error) {
             console.error("Update error:", error);
@@ -258,6 +263,41 @@ const AdminTableComponent = ({tableName, columns, endpoint, idField = "id"}) => 
         });
     };
 
+    const handleSort = (key) => {
+        let direction = 'asc';
+        if (sortConfig.key === key && sortConfig.direction === 'asc') {
+            direction = 'desc';
+        }
+        setSortConfig({ key, direction });
+    };
+
+    const getSortedData = () => {
+        if (!sortConfig.key) return data;
+        
+        const sorted = [...data].sort((a, b) => {
+            const aVal = a[sortConfig.key];
+            const bVal = b[sortConfig.key];
+            
+            if (aVal === null || aVal === undefined) return 1;
+            if (bVal === null || bVal === undefined) return -1;
+            
+            if (typeof aVal === 'number' && typeof bVal === 'number') {
+                return sortConfig.direction === 'asc' ? aVal - bVal : bVal - aVal;
+            }
+            
+            const aStr = String(aVal).toLowerCase();
+            const bStr = String(bVal).toLowerCase();
+            
+            if (sortConfig.direction === 'asc') {
+                return aStr.localeCompare(bStr, 'uk');
+            } else {
+                return bStr.localeCompare(aStr, 'uk');
+            }
+        });
+        
+        return sorted;
+    };
+
     return (
         <div className="admin-table-container">
             <h2>{tableName}</h2>
@@ -267,21 +307,33 @@ const AdminTableComponent = ({tableName, columns, endpoint, idField = "id"}) => 
                 <tr>
                     {columns.map((col) => (
                         !col.hidden && (
-                            <th key={col.key}>{col.title}</th>
+                            //<th key={col.key}>{col.title}</th>
+                            <th 
+                                key={col.key}
+                                onClick={() => handleSort(col.key)}
+                                style={{ cursor: 'pointer', userSelect: 'none' }}
+                            >
+                                {col.title}
+                                {sortConfig.key === col.key && (
+                                    <span style={{ marginLeft: '5px' }}>
+                                        {sortConfig.direction === 'asc' ? '↑' : '↓'}
+                                    </span>
+                                )}
+                            </th>
                         )
                     ))}
                     <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
-                {data.length === 0 ? (
+                {getSortedData().length === 0 ? (
                     <tr>
                         <td colSpan={columns.length + 1} className="no-data">
                             No data available
                         </td>
                     </tr>
                 ) : (
-                    data.map(item => (
+                    getSortedData().map(item => (
                         <tr key={item[idField]}>
                             {columns.map(col => (
                                 !col.hidden && (
@@ -289,7 +341,7 @@ const AdminTableComponent = ({tableName, columns, endpoint, idField = "id"}) => 
                                         {col.editable && col.type === 'select' ? (
                                             <select
                                                 className="status-select"
-                                                value={item[col.key]}
+                                                value={item[col.key] || ''}
                                                 onChange={(e) => handleInlineUpdate(item[idField], col.key, e.target.value)}
                                                 style={{
                                                     padding: '5px 10px',
@@ -297,8 +349,9 @@ const AdminTableComponent = ({tableName, columns, endpoint, idField = "id"}) => 
                                                     border: '1px solid #ddd',
                                                     cursor: 'pointer',
                                                     backgroundColor: 
-                                                        item[col.key] === 'Активна' ? '#e8f5e9' : 
-                                                        item[col.key] === 'Відхилена' ? '#ffebee' : '#fff3e0'
+                                                        item[col.key] === 'Підтверджено' ? '#e8f5e9' : 
+                                                        item[col.key] === 'Відхилено' ? '#ffebee' : 
+                                                        item[col.key] === 'В обробці' ? '#fff3e0' : '#f5f5f5'
                                                 }}
                                             >
                                                 {col.options.map(opt => (
@@ -317,6 +370,25 @@ const AdminTableComponent = ({tableName, columns, endpoint, idField = "id"}) => 
                                                 ))
                                             ) : col.type === 'date' ? (
                                                 formatDate(item[col.key])
+                                            ) : col.type === 'select' && col.options ? (
+                                                (() => {
+                                                    const option = col.options.find(opt => opt.id === item[col.key]);
+                                                    const displayValue = option ? option.name : item[col.key];
+                                                    const statusValue = item[col.key];
+                                                    return (
+                                                        <span style={{
+                                                            padding: '4px 8px',
+                                                            borderRadius: '4px',
+                                                            backgroundColor: 
+                                                                statusValue === 'Підтверджено' ? '#e8f5e9' : 
+                                                                statusValue === 'Відхилено' ? '#ffebee' : 
+                                                                statusValue === 'В обробці' ? '#fff3e0' : '#f5f5f5',
+                                                            display: 'inline-block'
+                                                        }}>
+                                                            {displayValue}
+                                                        </span>
+                                                    );
+                                                })()
                                             ) : (
                                                 item[col.key]
                                             )

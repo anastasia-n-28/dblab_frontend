@@ -63,8 +63,9 @@ const UniversalModalComponent = ({modalName, data, rows, onSave, onCancel, onCha
                                         className="textarea-element"
                                         name={row.key}
                                         placeholder={row.title}
-                                        value={data[row.key]}
+                                        value={data[row.key] || ''}
                                         onChange={(e) => onChange(e, row)}
+                                        maxLength={2000}
                                     />
                                 </>
                             ) : row.type === "date" ? (
@@ -73,7 +74,6 @@ const UniversalModalComponent = ({modalName, data, rows, onSave, onCancel, onCha
                                     name={row.key}
                                     type="date"
                                     placeholder={row.title}
-                                    // Користувач побачить дату згідно своїх налаштувань (ДД.ММ.РРРР)
                                     value={data[row.key] ? String(data[row.key]).split('T')[0] : ''}
                                     onChange={(e) => onChange(e, row)}
                                     disabled={isEditing && row.disabledOnEdit}

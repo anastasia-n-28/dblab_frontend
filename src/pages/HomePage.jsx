@@ -8,7 +8,6 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import API_CONFIG from '../config/api.js';
 
-// Оновлена картка навички - тепер це посилання
 const SkillCard = ({ id, name }) => (
     <Link to={`/studentproposals?directionId=${id}`} className='skill-card-link'>
         <div className='skill-card'>
@@ -57,13 +56,28 @@ const HomePage = () => {
     const [experts, setExperts] = useState([]);
 
     useEffect(() => {
-        // 1. Skills (Directions from DB)
-        axios.get(`${API_CONFIG.BASE_URL}/direction/getall`)
-            .then(response => {
-                setSkills(response.data.map(skill => ({
-                    id: skill.direction_Id,
-                    name: skill.name, 
-                })));
+        // 1. Skills (Directions from DB) - виводимо напрями з найбільшою кількістю пропозицій
+        Promise.all([
+            axios.get(`${API_CONFIG.BASE_URL}/direction/getall`),
+            axios.get(`${API_CONFIG.BASE_URL}/proposal/getall`)
+        ])
+            .then(([dirRes, propRes]) => {
+                const proposalCounts = {};
+                propRes.data.forEach(prop => {
+                    if (prop.direction_Id) {
+                        proposalCounts[prop.direction_Id] = (proposalCounts[prop.direction_Id] || 0) + 1;
+                    }
+                });
+                const sortedDirections = dirRes.data
+                    .map(skill => ({
+                        id: skill.direction_Id,
+                        name: skill.name,
+                        proposalCount: proposalCounts[skill.direction_Id] || 0
+                    }))
+                    .filter(skill => skill.proposalCount > 0)
+                    .sort((a, b) => b.proposalCount - a.proposalCount);
+
+                setSkills(sortedDirections);
             })
             .catch(error => {
                 console.error("Error fetching skills:", error);

@@ -117,10 +117,6 @@
     border-left: 5px solid var(--primary-color); 
 }
 
-.work-card-active {
-    border-left: 5px solid var(--primary-color); 
-}
-
 /* === ЗАГОЛОВКИ КАРТОК === */
 .card-header {
     display: flex;
@@ -228,7 +224,7 @@
 
 /* === СЕКЦІЇ (ВІДСТУПИ) === */
 .dashboard-section {
-    margin-bottom: 4rem; /* Великий відступ замість лінії (Whitespace) */
+    margin-bottom: 4rem;
 }
 
 /* Якщо десь залишився клас divider, прибираємо його відображення */
@@ -272,4 +268,115 @@
 }
 .proposal-card[data-complexity="medium"] .complexity-dots span:nth-child(-n+3) {
     background-color: #F59650;
+}
+
+/* === РЕЗУЛЬТАТИ В КАБІНЕТІ === */
+.result-item-card {
+    border-left: 5px solid var(--primary-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.clickable-result-card {
+    transition: var(--transition);
+}
+
+.clickable-result-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    border-left-color: var(--secondary-color);
+}
+
+/* Клікабельні картки пропозицій */
+.proposal-card.clickable-card {
+    transition: var(--transition);
+}
+
+.proposal-card.clickable-card:hover {
+    transform: translateY(-2px);
+    border-left-color: var(--secondary-color);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+.result-item-card .card-footer {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.work-actions {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.section-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Сітка карток для кабінету */
+.cards-grid-list {
+    display: grid;
+    grid-template-columns: 1fr; 
+    gap: 1.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Бейджі статусів */
+.badge-yellow {
+    background-color: #FFF3E0;
+    color: #E65100;
+}
+
+.badge-red {
+    background-color: #FFEBEE;
+    color: #C62828;
+}
+
+.card-description-left {
+    color: var(--text-light);
+    margin: 0 0 1.5rem 0;
+    line-height: 1.6;
+    text-align: left;
+    font-size: 0.95rem;
+}
+
+.card-badges {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+/* Кнопка Назад */
+.back-btn {
+    background-color: var(--white);
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    box-shadow: var(--box-shadow);
+}
+
+.back-btn:hover {
+    background-color: var(--primary-color);
+    color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 148, 200, 0.3);
 }

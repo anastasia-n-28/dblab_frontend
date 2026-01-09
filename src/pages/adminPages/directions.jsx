@@ -29,7 +29,7 @@ const Direction = () => {
     const columns = [
         { key: "direction_Id", title: "ID" },
         { key: "name", title: "Назва" },
-        { key: "description", title: "Опис" }
+        { key: "description", title: "Опис", type: "textarea", note: "Max length is 2000 symbols" }
     ];
 
     return (

@@ -13,7 +13,6 @@ const Results = () => {
     const authHeader = useAuthHeader();
 
     useEffect(() => {
-        // Fetch works
         axios.get(`${API_CONFIG.BASE_URL}/work/getFromDb`, {
             headers: {
                 'Authorization': authHeader,
@@ -30,7 +29,6 @@ const Results = () => {
                 console.error("Error fetching works:", error);
             });
 
-        // Fetch result types
         axios.get(`${API_CONFIG.BASE_URL}/resultType/getFromDb`, {
             headers: {
                 'Authorization': authHeader,
@@ -47,7 +45,6 @@ const Results = () => {
                 console.error("Error fetching result types:", error);
             });
 
-        // Fetch magazines
         axios.get(`${API_CONFIG.BASE_URL}/magazine/getFromDb`, {
             headers: {
                 'Authorization': authHeader,
@@ -64,7 +61,6 @@ const Results = () => {
                 console.error("Error fetching magazines:", error);
             });
 
-        // Fetch conferences
         axios.get(`${API_CONFIG.BASE_URL}/conference/getFromDb`, {
             headers: {
                 'Authorization': authHeader,
@@ -81,7 +77,6 @@ const Results = () => {
                 console.error("Error fetching conferences:", error);
             });
 
-        // Fetch competitions
         axios.get(`${API_CONFIG.BASE_URL}/competition/getFromDb`, {
             headers: {
                 'Authorization': authHeader,
@@ -99,12 +94,19 @@ const Results = () => {
             });
     }, []);
 
+    const statusOptions = [
+        { id: "В обробці", name: "В обробці" },
+        { id: "Підтверджено", name: "Підтверджено" },
+        { id: "Відхилено", name: "Відхилено" }
+    ];
+
     const columns = [
         { key: "result_Id", title: "ID" },
         { key: "name", title: "Назва" },
         { key: "year", title: "Рік" },
         { key: "pages", title: "Сторінки" },
         { key: "full_name", title: "Повне ім'я" },
+        { key: "status", title: "Статус", type: "select", options: statusOptions, editable: true },
         { key: "work_Id", title: "Робота", type: "select", options: workOptions, hidden: true },
         { key: "work_name", title: "Робота", modalHidden: true },
         { key: "result_type_Id", title: "Тип результату", type: "select", options: resultTypeOptions, hidden: true },

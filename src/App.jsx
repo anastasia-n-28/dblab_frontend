@@ -44,6 +44,7 @@ import StudentDirections from './pages/StudentDirections';
 import ReportsPage from './pages/adminPages/ReportsPage.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import StudentWorkDetails from './pages/StudentWorkDetails';
+import WorkPage from './pages/WorkPage';
 
 const App = () => {
 
@@ -64,6 +65,7 @@ const App = () => {
                     <Route path={"/studentdirections"} element={<StudentDirections/>}/>
                     <Route path={"/dashboard"} element={<Dashboard/>}/>
                     <Route path="/work/:id" element={<RequireAuth fallbackPath="/login"><StudentWorkDetails/></RequireAuth>} />
+                    <Route path="/workpage/:id" element={<WorkPage/>} />
                 </Route>
                 <Route path={'/apanel'} Component={AdminLayout}>
                     <Route path={"teachers"} element={<Teachers/>}></Route>

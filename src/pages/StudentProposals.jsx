@@ -3,8 +3,8 @@ import axios from 'axios';
 import API_CONFIG from '../config/api';
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser';
 import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader';
-import { useSearchParams } from 'react-router-dom';
-import { Search, Filter, User, Tag, Info, HelpCircle, Gauge } from 'lucide-react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { Search, Filter, User, Tag, Info, Gauge, ArrowUpDown } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import './styles/ClientPages.css';
 import './styles/StudentProposals.css';
@@ -16,37 +16,55 @@ const StudentProposals = () => {
     const [filteredProposals, setFilteredProposals] = useState([]);
     const [directions, setDirections] = useState([]);
     const [teachers, setTeachers] = useState([]);
-    const [types, setTypes] = useState([]); 
-    
-    // Фільтри
+    const [types, setTypes] = useState([]);
+    const [works, setWorks] = useState([]);
+
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedDirections, setSelectedDirections] = useState([]);
     const [selectedTeacher, setSelectedTeacher] = useState('');
     const [selectedType, setSelectedType] = useState('');
-    const [complexityRange, setComplexityRange] = useState([1, 3]); 
-
     const [selectedComplexity, setSelectedComplexity] = useState('');
+    const [selectedStatus, setSelectedStatus] = useState('');
+    const [sortOrder, setSortOrder] = useState('name_asc');
+
     const authUser = useAuthUser();
     const authHeader = useAuthHeader();
     const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
     const { addToast } = useToast();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [propRes, dirRes, teachRes, typeRes] = await Promise.all([
+                const results = await Promise.allSettled([
                     axios.get(`${API_CONFIG.BASE_URL}/proposal/getall`),
                     axios.get(`${API_CONFIG.BASE_URL}/direction/getall`),
                     axios.get(`${API_CONFIG.BASE_URL}/teacher/getall`),
-                    axios.get(`${API_CONFIG.BASE_URL}/proposaltype/getall`).catch(() => ({ data: [] }))
+                    axios.get(`${API_CONFIG.BASE_URL}/proposaltype/getall`),
+                    axios.get(`${API_CONFIG.BASE_URL}/work/getFromDb`, {
+                        headers: { 'Authorization': authHeader }
+                    }).catch(() => ({ data: [] }))
                 ]);
 
-                const enrichedProposals = propRes.data.map(p => ({
-                    ...p,
-                    teacherName: teachRes.data.find(t => t.teacher_Id === p.teacher_Id)?.full_name || 'Невідомий',
-                    directionName: dirRes.data.find(d => d.direction_Id === p.direction_Id)?.name || 'Загальний',
-                    typeName: typeRes.data.find(t => t.proposal_type_Id === p.proposal_type_Id)?.name || 'Загальний'
-                }));
+                const propRes = results[0].status === 'fulfilled' ? results[0].value : { data: [] };
+                const dirRes = results[1].status === 'fulfilled' ? results[1].value : { data: [] };
+                const teachRes = results[2].status === 'fulfilled' ? results[2].value : { data: [] };
+                const typeRes = results[3].status === 'fulfilled' ? results[3].value : { data: [] };
+                const workRes = results[4].status === 'fulfilled' ? results[4].value : { data: [] };
+
+                setWorks(workRes.data);
+
+                const enrichedProposals = propRes.data.map(p => {
+                    const workForProposal = workRes.data.find(w => w.proposal_Id === p.proposal_Id);
+                    return {
+                        ...p,
+                        teacherName: teachRes.data.find(t => t.teacher_Id === p.teacher_Id)?.full_name || 'Невідомий',
+                        directionName: dirRes.data.find(d => d.direction_Id === p.direction_Id)?.name || 'Загальний',
+                        typeName: typeRes.data.find(t => t.proposal_type_Id === p.proposal_type_Id)?.name || 'Загальний',
+                        workId: workForProposal?.work_Id,
+                        studentNickname: workForProposal?.User?.nickname
+                    };
+                });
 
                 setProposals(enrichedProposals);
                 setFilteredProposals(enrichedProposals);
@@ -54,36 +72,25 @@ const StudentProposals = () => {
                 setTeachers(teachRes.data);
                 setTypes(typeRes.data);
             } catch (error) {
-                console.error("Error loading data:", error);
+                console.error("Critical error loading data:", error);
             }
         };
         fetchData();
-    }, []);
+    }, [authHeader]);
 
     useEffect(() => {
         const dirId = searchParams.get('directionId');
-        
         if (dirId) {
             const id = parseInt(dirId);
             if (!isNaN(id)) {
-                console.log("Applying filter from URL:", id);
                 setSelectedDirections([id]);
-
                 setSearchQuery('');
                 setSelectedTeacher('');
                 setSelectedType('');
-                setComplexityRange([1, 3]);
+                setSelectedComplexity('');
             }
         }
     }, [searchParams]);
-
-    const getComplexityNum = (str) => {
-        if (!str) return 2;
-        const s = str.toLowerCase();
-        if (s.includes('низька') || s.includes('low')) return 1;
-        if (s.includes('висока') || s.includes('high')) return 3;
-        return 2; 
-    };
 
     useEffect(() => {
         if (proposals.length === 0) return;
@@ -97,42 +104,74 @@ const StudentProposals = () => {
         if (selectedDirections.length > 0) {
             result = result.filter(p => selectedDirections.includes(p.direction_Id));
         }
-        
+
         if (selectedTeacher) {
             result = result.filter(p => p.teacher_Id === parseInt(selectedTeacher));
         }
-        
+
         if (selectedType) {
             result = result.filter(p => p.proposal_type_Id === parseInt(selectedType));
         }
 
-        result = result.filter(p => {
-            const level = getComplexityNum(p.complexity);
-            return level >= complexityRange[0] && level <= complexityRange[1];
-        });
+        if (selectedComplexity) {
+            result = result.filter(p => {
+                if (!p.complexity) return false;
+                const val = p.complexity.toLowerCase();
+                const filter = selectedComplexity.toLowerCase();
 
-        // Тільки доступні
-        result = result.filter(p => p.status === 'Запропоновано');
+                if (filter === 'низька') return val.includes('низька') || val.includes('low');
+                if (filter === 'середня') return val.includes('середня') || val.includes('medium');
+                if (filter === 'висока') return val.includes('висока') || val.includes('high');
+                
+                return val.includes(filter);
+            });
+        }
+
+        if (selectedStatus) {
+            if (selectedStatus === 'Запропоновано') {
+                // "Доступні" показує "Запропоновано" та "Є записи"
+                result = result.filter(p => p.status === 'Запропоновано' || p.status === 'Є записи');
+            } else {
+                result = result.filter(p => p.status === selectedStatus);
+            }
+        } else {
+            // За замовчуванням показуємо всі статуси крім "Відкладено"
+            result = result.filter(p => p.status !== 'Відкладено');
+        }
+
+        // Сортування
+        result.sort((a, b) => {
+            const nameA = a.name.toLowerCase();
+            const nameB = b.name.toLowerCase();
+            const teacherA = a.teacherName.toLowerCase();
+            const teacherB = b.teacherName.toLowerCase();
+            const directionA = a.directionName.toLowerCase();
+            const directionB = b.directionName.toLowerCase();
+
+            switch (sortOrder) {
+                case 'name_asc':
+                    return nameA.localeCompare(nameB);
+                case 'name_desc':
+                    return nameB.localeCompare(nameA);
+                case 'teacher_asc':
+                    return teacherA.localeCompare(teacherB);
+                case 'teacher_desc':
+                    return teacherB.localeCompare(teacherA);
+                case 'direction_asc':
+                    return directionA.localeCompare(directionB);
+                case 'direction_desc':
+                    return directionB.localeCompare(directionA);
+                default:
+                    return 0;
+            }
+        });
 
         setFilteredProposals(result);
         
-    }, [proposals, searchQuery, selectedDirections, selectedTeacher, selectedType, complexityRange]); 
+    }, [proposals, searchQuery, selectedDirections, selectedTeacher, selectedType, selectedComplexity, selectedStatus, sortOrder]); 
 
     const handleDirectionChange = (id) => {
         setSelectedDirections(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
-    };
-
-    const handleSliderChange = (e, type) => {
-        const val = parseInt(e.target.value);
-        if (type === 'min') {
-            const newMin = val;
-            const newMax = Math.max(newMin, complexityRange[1]);
-            setComplexityRange([newMin, newMax]);
-        } else {
-            const newMax = val;
-            const newMin = Math.min(newMax, complexityRange[0]);
-            setComplexityRange([newMin, newMax]);
-        }
     };
 
     const handleEnroll = async (proposalId) => {
@@ -187,10 +226,41 @@ const StudentProposals = () => {
                 <div className="filters-group">
                     <div className="filter-label"><Gauge size={18} /> Складність:</div>
                     <select className="search-input" style={{minWidth: '200px'}} value={selectedComplexity} onChange={(e) => setSelectedComplexity(e.target.value)}>
-                        <option value="">Складність</option>
+                        <option value="">Всі рівні</option>
                         <option value="Низька">Низька</option>
                         <option value="Середня">Середня</option>
                         <option value="Висока">Висока</option>
+                    </select>
+                </div>
+
+                <div className="filters-group">
+                    <div className="filter-label"><Info size={18} /> Статус:</div>
+                    <select className="search-input" style={{minWidth: '200px'}} value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
+                        <option value="">Всі статуси</option>
+                        <option value="Запропоновано">Доступні</option>
+                        <option value="Підтверджено">Підтверджені</option>
+                        <option value="Завершено">Завершені</option>
+                    </select>
+                </div>
+
+                <div className="filters-group">
+                    <label htmlFor="sort-order" className="filter-label">
+                        <ArrowUpDown size={18} /> Сортування:
+                    </label>
+                    <select 
+                        id="sort-order"
+                        name="sortOrder"
+                        className="search-input" 
+                        style={{minWidth: '200px', paddingLeft: '15px'}}
+                        value={sortOrder}
+                        onChange={(e) => setSortOrder(e.target.value)}
+                    >
+                        <option value="name_asc">За назвою (А-Я)</option>
+                        <option value="name_desc">За назвою (Я-А)</option>
+                        <option value="teacher_asc">За викладачем (А-Я)</option>
+                        <option value="teacher_desc">За викладачем (Я-А)</option>
+                        <option value="direction_asc">За напрямом (А-Я)</option>
+                        <option value="direction_desc">За напрямом (Я-А)</option>
                     </select>
                 </div>
 
@@ -213,49 +283,88 @@ const StudentProposals = () => {
 
             <div className="cards-grid-list">
                 {filteredProposals.length > 0 ? (
-                    filteredProposals.map(proposal => (
-                        <div key={proposal.proposal_Id} className="item-card proposal-card">
-                            <div className="card-content">
-                                <div className="card-header">
-                                    <h3 className="card-title">{proposal.name}</h3>
-                                    <div className="card-badges">
-                                        <span className="badge badge-blue">{proposal.directionName}</span>
-                                        <SimpleTooltip text="Статус: Запропоновано">
-                                            <span className={`badge ${proposal.status === 'Запропоновано' ? 'badge-green' : 'badge-gray'}`}>
+                    filteredProposals.map(proposal => {
+                        const isCompleted = proposal.status === 'Завершено' || proposal.status === 'Підтверджено';
+                        const handleClick = () => {
+                            if (isCompleted && proposal.workId) {
+                                navigate(`/workpage/${proposal.workId}`);
+                            }
+                        };
+                        
+                        return (
+                            <div 
+                                key={proposal.proposal_Id} 
+                                className={`item-card proposal-card ${isCompleted && proposal.workId ? 'clickable-card' : ''}`}
+                                onClick={isCompleted && proposal.workId ? handleClick : undefined}
+                                style={isCompleted && proposal.workId ? { cursor: 'pointer' } : {}}
+                            >
+                                <div className="card-content">
+                                    <div className="card-header">
+                                        <h3 className="card-title">{proposal.name}</h3>
+                                        <div className="card-badges">
+                                            <span className="badge badge-blue">{proposal.directionName}</span>
+                                            <span className={`badge ${
+                                                proposal.status === 'Запропоновано' ? 'badge-green' : 
+                                                proposal.status === 'Є записи' ? 'badge-green' :
+                                                proposal.status === 'Підтверджено' ? 'badge-yellow' :
+                                                proposal.status === 'Завершено' ? 'badge-blue' : 'badge-gray'
+                                            }`}>
                                                 {proposal.status}
                                             </span>
-                                        </SimpleTooltip>
-                                    </div>
-                                </div>
-                                <p className="card-description-left">{proposal.description}</p>
-                                <div className="card-footer-col">
-                                    <div className="proposal-type-row">
-                                        <Tag size={14} /> 
-                                        <span style={{fontWeight: 600}}>Тип:</span> {proposal.typeName}
-
-                                        <ComplexityDots levelStr={proposal.complexity} />
-                                    
-                                    </div>
-                                    <div className="card-footer-row">
-                                        <div className="teacher-tags">
-                                            <span className="label">Керівник: </span>
-                                            <span className="teacher-tag">{proposal.teacherName}</span>
                                         </div>
-                                        {proposal.status === 'Запропоновано' && (
-                                            <button className="enroll-btn-small" onClick={() => handleEnroll(proposal.proposal_Id)}>
-                                                Записатися
-                                            </button>
-                                        )}
+                                    </div>
+                                    <p className="card-description-left">{proposal.description}</p>
+                                    <div className="card-footer-col">
+                                        <div className="proposal-type-row">
+                                            <Tag size={14} /> 
+                                            <span style={{fontWeight: 600}}>Тип:</span> {proposal.typeName}
+
+                                            <ComplexityDots levelStr={proposal.complexity} />
+                                        
+                                        </div>
+                                        <div className="card-footer-row">
+                                            <div className="teacher-tags">
+                                                <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: proposal.studentNickname ? '0.5rem' : '0'}}>
+                                                    <span className="label">Керівник: </span>
+                                                    <span className="teacher-tag">{proposal.teacherName}</span>
+                                                </div>
+                                                {proposal.studentNickname && (
+                                                    <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                                        <span className="label">Студент: </span>
+                                                        <span className="teacher-tag">{proposal.studentNickname}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            {(proposal.status === 'Запропоновано' || proposal.status === 'Є записи') && (
+                                                <button className="enroll-btn-small" onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleEnroll(proposal.proposal_Id);
+                                                }}>
+                                                    Записатися
+                                                </button>
+                                            )}
+                                            {isCompleted && proposal.workId && (
+                                                <span style={{fontSize: '0.85rem', color: '#666', fontStyle: 'italic'}}>
+                                                    Натисніть для перегляду роботи
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    ))
+                        );
+                    })
                 ) : (
                     <div className="no-results-message">
                         <p>За обраними критеріями пропозицій не знайдено.</p>
                         <button className="action-btn" onClick={() => {
-                            setSelectedDirections([]); setSelectedTeacher(''); setSearchQuery(''); setSelectedType(''); setComplexityRange([1,3]);
+                            setSelectedDirections([]); 
+                            setSelectedTeacher(''); 
+                            setSearchQuery(''); 
+                            setSelectedType(''); 
+                            setSelectedComplexity('');
+                            setSelectedStatus('');
+                            setSortOrder('name_asc');
                         }} style={{margin: '0 auto'}}>
                             Скинути фільтри
                         </button>

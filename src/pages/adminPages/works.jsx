@@ -56,9 +56,9 @@ const Work = () => {
         { key: "review", title: "Оцінка" },
         { key: "comment", title: "Коментар" },
         { key: "name", title: "Назва" },
-        { key: "file", title: "Файл", modalHidden: true },
-        { key: "proposal_Id", title: "Пропозиція", type: "select", options: proposalOptions },
-        { key: "user_Id", title: "Користувач", type: "select", options: userOptions }
+        { key: "file", title: "Файл/Посилання", type: "textarea"},
+        { key: "proposal_Id", title: "Пропозиція", type: "select", options: proposalOptions, displayAsName: true },
+        { key: "user_Id", title: "Користувач", type: "select", options: userOptions, displayAsName: true }
     ];
 
     return (

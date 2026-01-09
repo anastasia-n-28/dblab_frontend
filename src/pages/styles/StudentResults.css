@@ -22,6 +22,26 @@
     box-shadow: 0 8px 24px rgba(0,0,0,0.12);
 }
 
+.result-card.clickable-result-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    border-left-color: var(--secondary-color);
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.card-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-color);
+    line-height: 1.3;
+}
+
 .no-results {
     text-align: center;
     color: var(--text-light);

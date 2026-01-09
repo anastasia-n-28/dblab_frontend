@@ -52,7 +52,7 @@ const Proposal = () => {
     const columns = [
         { key: "proposal_Id", title: "ID" },
         { key: "name", title: "Назва" },
-        { key: "description", title: "Опис" },
+        { key: "description", title: "Опис", type: "textarea", note: "Max length is 2000 symbols" },
         { 
             key: "status", 
             title: "Статус", 
@@ -74,9 +74,9 @@ const Proposal = () => {
                 {id: 'Висока', name: 'Висока'}
             ] 
         },
-        { key: "teacher_Id", title: "Викладач", type: "select", options: teacherOptions },
-        { key: "proposal_type_Id", title: "Тип пропозиції", type: "select", options: proposalTypeOptions },
-        { key: "direction_Id", title: "Напрям", type: "select", options: directionOptions }
+        { key: "teacher_Id", title: "Викладач", type: "select", options: teacherOptions, displayAsName: true },
+        { key: "proposal_type_Id", title: "Тип пропозиції", type: "select", options: proposalTypeOptions, displayAsName: true },
+        { key: "direction_Id", title: "Напрям", type: "select", options: directionOptions, displayAsName: true }
     ];
 
     return (
